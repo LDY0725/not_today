@@ -32,11 +32,19 @@ class MyApp extends StatelessWidget {
       getPages: [
         GetPage(
           name: '/',
-          page: () => const ResultPageController(),
+          page: () => const HomePageController(),
         ),
         GetPage(
           name: '/result',
           page: () => const ResultPageController(),
+        ),
+        GetPage(
+          name: '/share_card',
+          page: () => const ShareCardPageController(),
+        ),
+        GetPage(
+          name: '/medal',
+          page: () => const MedalPageController(),
         ),
       ],
       unknownRoute: GetPage(

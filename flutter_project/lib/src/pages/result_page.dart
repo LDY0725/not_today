@@ -398,13 +398,7 @@ class _ResultPageControllerState extends State<ResultPageController>
                 icon: Icons.share,
                 isPrimary: true,
                 onPressed: () {
-                  Get.snackbar(
-                    '分享卡',
-                    '功能开发中...',
-                    snackPosition: SnackPosition.BOTTOM,
-                    backgroundColor: primaryColor,
-                    colorText: Colors.white,
-                  );
+                  Get.toNamed('/share_card');
                 },
               ),
               const SizedBox(height: 12),
@@ -414,13 +408,7 @@ class _ResultPageControllerState extends State<ResultPageController>
                 icon: Icons.workspace_premium,
                 isPrimary: false,
                 onPressed: () {
-                  Get.snackbar(
-                    '勋章',
-                    '功能开发中...',
-                    snackPosition: SnackPosition.BOTTOM,
-                    backgroundColor: primaryColor,
-                    colorText: Colors.white,
-                  );
+                  Get.toNamed('/medal');
                 },
               ),
               const SizedBox(height: 12),
