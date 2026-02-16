@@ -418,13 +418,7 @@ class _ResultPageControllerState extends State<ResultPageController>
                 icon: Icons.description,
                 isPrimary: false,
                 onPressed: () {
-                  Get.snackbar(
-                    '报告',
-                    '功能开发中...',
-                    snackPosition: SnackPosition.BOTTOM,
-                    backgroundColor: primaryColor,
-                    colorText: Colors.white,
-                  );
+                  Get.toNamed('/report');
                 },
               ),
             ],
