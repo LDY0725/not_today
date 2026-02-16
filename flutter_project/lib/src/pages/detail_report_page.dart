@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'dart:convert';
 import 'dart:math' as math;
-import '../../cache/cache_manager.dart';
-import '../../models/user_data.dart';
+import '../cache/cache_manager.dart';
+import '../models/user_data.dart';
 
 class DetailReportPageController extends StatefulWidget {
   const DetailReportPageController({super.key});
@@ -74,8 +74,8 @@ class _DetailReportPageControllerState
           children: [
             Positioned.fill(
               child: CustomPaint(
-                painter: GrainTexturePainter(
-                  color: primaryColor.withOpacity(0.03),
+                painter: DetailGrainTexturePainter(
+                  color: primaryColor.withValues(alpha: 0.03),
                 ),
               ),
             ),
@@ -128,7 +128,7 @@ class _DetailReportPageControllerState
       width: size,
       height: size,
       decoration: BoxDecoration(
-        color: color.withOpacity(0.05),
+        color: color.withValues(alpha: 0.05),
         shape: BoxShape.circle,
       ),
     );
@@ -145,7 +145,7 @@ class _DetailReportPageControllerState
               width: 40,
               height: 40,
               decoration: BoxDecoration(
-                color: primaryColor.withOpacity(0.1),
+                color: primaryColor.withValues(alpha: 0.1),
                 shape: BoxShape.circle,
               ),
               child: Icon(
@@ -160,7 +160,7 @@ class _DetailReportPageControllerState
               '你的 $_year 忍耐报告',
               textAlign: TextAlign.center,
               style: TextStyle(
-                color: primaryColor.withOpacity(0.8),
+                color: primaryColor.withValues(alpha: 0.8),
                 fontSize: 14,
                 fontWeight: FontWeight.w600,
                 letterSpacing: 3,
@@ -200,7 +200,7 @@ class _DetailReportPageControllerState
                 child: Text(
                   '天',
                   style: TextStyle(
-                    color: primaryColor.withOpacity(0.6),
+                    color: primaryColor.withValues(alpha: 0.6),
                     fontSize: 20,
                     fontWeight: FontWeight.w600,
                   ),
@@ -225,7 +225,7 @@ class _DetailReportPageControllerState
       child: Column(
         children: [
           Text(
-            '工作内容 ${primaryColor.withOpacity(0.3)} 情绪消耗',
+            '工作内容 ${primaryColor.withValues(alpha: 0.3)} 情绪消耗',
             textAlign: TextAlign.center,
             style: TextStyle(
               color: isDarkMode ? Colors.white : primaryColor,
@@ -239,7 +239,7 @@ class _DetailReportPageControllerState
             '"在这段沉默的时光里，你独自对抗了数不清的琐碎与疲惫。"',
             textAlign: TextAlign.center,
             style: TextStyle(
-              color: primaryColor.withOpacity(0.5),
+              color: primaryColor.withValues(alpha: 0.5),
               fontSize: 12,
               fontStyle: FontStyle.italic,
               height: 1.6,
@@ -275,8 +275,8 @@ class _DetailReportPageControllerState
                           industry['name'] as String,
                           style: TextStyle(
                             color: isDarkMode
-                                ? Colors.white.withOpacity(0.8)
-                                : primaryColor.withOpacity(0.8),
+                                ? Colors.white.withValues(alpha: 0.8)
+                                : primaryColor.withValues(alpha: 0.8),
                             fontSize: 12,
                             fontWeight: FontWeight.w500,
                           ),
@@ -286,8 +286,8 @@ class _DetailReportPageControllerState
                         '${industry['percent']}%',
                         style: TextStyle(
                           color: isDarkMode
-                              ? Colors.white.withOpacity(0.5)
-                              : primaryColor.withOpacity(0.5),
+                              ? Colors.white.withValues(alpha: 0.5)
+                              : primaryColor.withValues(alpha: 0.5),
                           fontSize: 12,
                           fontWeight: FontWeight.w500,
                         ),
@@ -295,8 +295,8 @@ class _DetailReportPageControllerState
                     ],
                   ),
                   const SizedBox(height: 6),
-                  _buildProgressBar(
-                      primaryColor, (industry['percent'] as int) / 30, isDarkMode,
+                  _buildProgressBar(primaryColor,
+                      (industry['percent'] as int) / 30, isDarkMode,
                       barHeight: 4),
                 ],
               ),
@@ -334,7 +334,7 @@ class _DetailReportPageControllerState
                 child: Text(
                   '的忍者',
                   style: TextStyle(
-                    color: primaryColor.withOpacity(0.6),
+                    color: primaryColor.withValues(alpha: 0.6),
                     fontSize: 20,
                     fontWeight: FontWeight.w600,
                   ),
@@ -352,7 +352,8 @@ class _DetailReportPageControllerState
                 height: 8,
                 margin: const EdgeInsets.symmetric(horizontal: 4),
                 decoration: BoxDecoration(
-                  color: primaryColor.withOpacity(opacity.clamp(0.0, 1.0)),
+                  color:
+                      primaryColor.withValues(alpha: opacity.clamp(0.0, 1.0)),
                   shape: BoxShape.circle,
                 ),
               );
@@ -374,15 +375,15 @@ class _DetailReportPageControllerState
     return Container(
       decoration: BoxDecoration(
         color: isDarkMode
-            ? Colors.white.withOpacity(0.05)
-            : Colors.white.withOpacity(0.4),
+            ? Colors.white.withValues(alpha: 0.05)
+            : Colors.white.withValues(alpha: 0.4),
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: primaryColor.withOpacity(0.05),
+          color: primaryColor.withValues(alpha: 0.05),
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 10,
             offset: const Offset(0, 2),
           ),
@@ -396,14 +397,14 @@ class _DetailReportPageControllerState
             children: [
               Icon(
                 icon,
-                color: primaryColor.withOpacity(0.4),
+                color: primaryColor.withValues(alpha: 0.4),
                 size: iconSize,
               ),
               const SizedBox(width: 6),
               Text(
                 title,
                 style: TextStyle(
-                  color: primaryColor.withOpacity(0.4),
+                  color: primaryColor.withValues(alpha: 0.4),
                   fontSize: 14,
                   fontWeight: FontWeight.w500,
                 ),
@@ -417,14 +418,13 @@ class _DetailReportPageControllerState
     );
   }
 
-  Widget _buildProgressBar(Color primaryColor, double percent,
-      bool isDarkMode,
+  Widget _buildProgressBar(Color primaryColor, double percent, bool isDarkMode,
       {double barHeight = 6}) {
     return Container(
       width: double.infinity,
       height: barHeight,
       decoration: BoxDecoration(
-        color: primaryColor.withOpacity(0.1),
+        color: primaryColor.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(barHeight / 2),
       ),
       child: ClipRRect(
@@ -450,7 +450,7 @@ class _DetailReportPageControllerState
         '这一年，你辛苦了',
         textAlign: TextAlign.center,
         style: TextStyle(
-          color: primaryColor.withOpacity(0.3),
+          color: primaryColor.withValues(alpha: 0.3),
           fontSize: 14,
           fontWeight: FontWeight.w400,
         ),
@@ -473,7 +473,7 @@ class _DetailReportPageControllerState
               borderRadius: BorderRadius.circular(12),
             ),
             elevation: 8,
-            shadowColor: primaryColor.withOpacity(0.4),
+            shadowColor: primaryColor.withValues(alpha: 0.4),
           ),
           onPressed: () {
             Get.toNamed('/report_share_card');
@@ -502,10 +502,10 @@ class _DetailReportPageControllerState
   }
 }
 
-class GrainTexturePainter extends CustomPainter {
+class DetailGrainTexturePainter extends CustomPainter {
   final Color color;
 
-  GrainTexturePainter({required this.color});
+  DetailGrainTexturePainter({required this.color});
 
   @override
   void paint(Canvas canvas, Size size) {

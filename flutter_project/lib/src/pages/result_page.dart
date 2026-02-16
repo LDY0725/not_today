@@ -142,7 +142,7 @@ class _ResultPageControllerState extends State<ResultPageController>
         child: CustomPaint(
           size: Size.infinite,
           painter: DotGridPainter(
-            color: const Color(0xFF4a3621).withOpacity(0.08),
+            color: const Color(0xFF4a3621).withValues(alpha: 0.08),
           ),
         ),
       ),
@@ -160,7 +160,7 @@ class _ResultPageControllerState extends State<ResultPageController>
               width: 40,
               height: 40,
               decoration: BoxDecoration(
-                color: primaryColor.withOpacity(0.1),
+                color: primaryColor.withValues(alpha: 0.1),
                 shape: BoxShape.circle,
               ),
               child: Icon(
@@ -175,7 +175,7 @@ class _ResultPageControllerState extends State<ResultPageController>
               '今日记录',
               textAlign: TextAlign.center,
               style: TextStyle(
-                color: primaryColor.withOpacity(0.6),
+                color: primaryColor.withValues(alpha: 0.6),
                 fontSize: 14,
                 fontWeight: FontWeight.w600,
                 letterSpacing: 2,
@@ -196,7 +196,7 @@ class _ResultPageControllerState extends State<ResultPageController>
               width: 40,
               height: 40,
               decoration: BoxDecoration(
-                color: primaryColor.withOpacity(0.1),
+                color: primaryColor.withValues(alpha: 0.1),
                 shape: BoxShape.circle,
               ),
               child: Icon(
@@ -229,7 +229,7 @@ class _ResultPageControllerState extends State<ResultPageController>
               '今天，你还是没真的走',
               textAlign: TextAlign.center,
               style: TextStyle(
-                color: primaryColor.withOpacity(0.7),
+                color: primaryColor.withValues(alpha: 0.7),
                 fontSize: 18,
                 fontWeight: FontWeight.w500,
                 height: 1.3,
@@ -313,7 +313,7 @@ class _ResultPageControllerState extends State<ResultPageController>
         '你不是没勇气，\n是现在的你更清楚代价。',
         textAlign: TextAlign.center,
         style: TextStyle(
-          color: primaryColor.withOpacity(0.8),
+          color: primaryColor.withValues(alpha: 0.8),
           fontSize: 18,
           fontWeight: FontWeight.w500,
           height: 1.6,
@@ -328,10 +328,10 @@ class _ResultPageControllerState extends State<ResultPageController>
 
     return Container(
       decoration: BoxDecoration(
-        color: primaryColor.withOpacity(0.08),
+        color: primaryColor.withValues(alpha: 0.08),
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
-          color: primaryColor.withOpacity(0.1),
+          color: primaryColor.withValues(alpha: 0.1),
         ),
       ),
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -340,14 +340,14 @@ class _ResultPageControllerState extends State<ResultPageController>
         children: [
           Icon(
             Icons.location_on,
-            color: primaryColor.withOpacity(0.5),
+            color: primaryColor.withValues(alpha: 0.5),
             size: 16,
           ),
           const SizedBox(width: 4),
           Text(
             '$city · $industry',
             style: TextStyle(
-              color: primaryColor.withOpacity(0.6),
+              color: primaryColor.withValues(alpha: 0.6),
               fontSize: 14,
               fontWeight: FontWeight.w500,
               letterSpacing: 1,
@@ -367,7 +367,7 @@ class _ResultPageControllerState extends State<ResultPageController>
           gradient: LinearGradient(
             colors: [
               Colors.transparent,
-              primaryColor.withOpacity(0.2),
+              primaryColor.withValues(alpha: 0.2),
               Colors.transparent,
             ],
           ),
@@ -448,12 +448,12 @@ class _ResultPageControllerState extends State<ResultPageController>
           side: isPrimary
               ? null
               : BorderSide(
-                  color: primaryColor.withOpacity(0.2),
+                  color: primaryColor.withValues(alpha: 0.2),
                   width: 2,
                 ),
           elevation: isPrimary ? 4 : 0,
           shadowColor:
-              isPrimary ? primaryColor.withOpacity(0.3) : Colors.transparent,
+              isPrimary ? primaryColor.withValues(alpha: 0.3) : Colors.transparent,
         ),
         onPressed: onPressed,
         child: Row(

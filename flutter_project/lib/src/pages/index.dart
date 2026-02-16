@@ -4,4 +4,7 @@ export 'share_card_page.dart';
 export 'medal_page.dart';
 export 'index_page.dart';
 export 'report_page.dart';
+export 'detail_report_page.dart';
+export 'payment_page.dart';
+export 'report_share_card_page.dart';
 export 'base_page.dart';

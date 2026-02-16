@@ -132,7 +132,7 @@ class _HomePageControllerState extends State<HomePageController>
             width: 40,
             height: 40,
             decoration: BoxDecoration(
-              color: primaryColor.withOpacity(0.1),
+              color: primaryColor.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(8),
             ),
             child: Icon(
@@ -180,7 +180,7 @@ class _HomePageControllerState extends State<HomePageController>
             '有时候想离开，只是想确认自己还有选择。',
             textAlign: TextAlign.center,
             style: TextStyle(
-              color: primaryColor.withOpacity(0.6),
+              color: primaryColor.withValues(alpha: 0.6),
               fontSize: 14,
               fontWeight: FontWeight.w500,
               height: 1.5,
@@ -251,7 +251,7 @@ class _HomePageControllerState extends State<HomePageController>
                     height: 180,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color: primaryColor.withOpacity(isDarkMode ? 0.1 : 0.05),
+                      color: primaryColor.withValues(alpha: isDarkMode ? 0.1 : 0.05),
                     ),
                     child: Center(
                       child: CustomPaint(
@@ -310,8 +310,8 @@ class _HomePageControllerState extends State<HomePageController>
         textAlign: TextAlign.center,
         style: TextStyle(
           color: isDarkMode
-              ? const Color(0xFF4a3621).withOpacity(0.3)
-              : const Color(0xFF4a3621).withOpacity(0.3),
+              ? const Color(0xFF4a3621).withValues(alpha: 0.3)
+              : const Color(0xFF4a3621).withValues(alpha: 0.3),
           fontSize: 12,
           fontWeight: FontWeight.w500,
           letterSpacing: 2,
@@ -358,11 +358,11 @@ class _HomePageControllerState extends State<HomePageController>
         color: isDarkMode ? const Color(0xFF1d1915) : Colors.white,
         borderRadius: BorderRadius.circular(8),
         border: Border.all(
-          color: primaryColor.withOpacity(0.1),
+          color: primaryColor.withValues(alpha: 0.1),
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 4,
             offset: const Offset(0, 2),
           ),
@@ -387,7 +387,7 @@ class _HomePageControllerState extends State<HomePageController>
                 child: Text(
                   label,
                   style: TextStyle(
-                    color: primaryColor.withOpacity(0.8),
+                    color: primaryColor.withValues(alpha: 0.8),
                     fontSize: 14,
                     fontWeight: FontWeight.w600,
                   ),
@@ -395,7 +395,7 @@ class _HomePageControllerState extends State<HomePageController>
               ),
               Icon(
                 icon,
-                color: primaryColor.withOpacity(0.4),
+                color: primaryColor.withValues(alpha: 0.4),
                 size: 20,
               ),
             ],

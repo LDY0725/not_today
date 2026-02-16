@@ -118,10 +118,10 @@ class _ShareCardPageControllerState extends State<ShareCardPageController>
         color: (Theme.of(context).brightness == Brightness.dark
                 ? backgroundDark
                 : Colors.white)
-            .withOpacity(0.8),
+            .withValues(alpha: 0.8),
         border: Border(
           bottom: BorderSide(
-            color: primaryColor.withOpacity(0.05),
+            color: primaryColor.withValues(alpha: 0.05),
           ),
         ),
       ),
@@ -134,7 +134,7 @@ class _ShareCardPageControllerState extends State<ShareCardPageController>
               width: 40,
               height: 40,
               decoration: BoxDecoration(
-                color: primaryColor.withOpacity(0.1),
+                color: primaryColor.withValues(alpha: 0.1),
                 shape: BoxShape.circle,
               ),
               child: Icon(
@@ -178,11 +178,11 @@ class _ShareCardPageControllerState extends State<ShareCardPageController>
           color: cardWarm,
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
-            color: primaryColor.withOpacity(0.2),
+            color: primaryColor.withValues(alpha: 0.2),
           ),
           boxShadow: [
             BoxShadow(
-              color: primaryColor.withOpacity(0.1),
+              color: primaryColor.withValues(alpha: 0.1),
               blurRadius: 25,
               offset: const Offset(0, 20),
               spreadRadius: -5,
@@ -195,7 +195,7 @@ class _ShareCardPageControllerState extends State<ShareCardPageController>
               child: CustomPaint(
                 size: Size.infinite,
                 painter: GrainTexturePainter(
-                  color: primaryColor.withOpacity(0.03),
+                  color: primaryColor.withValues(alpha: 0.03),
                 ),
               ),
             ),
@@ -210,7 +210,7 @@ class _ShareCardPageControllerState extends State<ShareCardPageController>
                       Text(
                         'STILL HERE',
                         style: TextStyle(
-                          color: primaryColor.withOpacity(0.6),
+                          color: primaryColor.withValues(alpha: 0.6),
                           fontSize: 12,
                           fontWeight: FontWeight.w600,
                           letterSpacing: 3,
@@ -251,10 +251,10 @@ class _ShareCardPageControllerState extends State<ShareCardPageController>
           decoration: BoxDecoration(
             border: Border(
               top: BorderSide(
-                color: primaryColor.withOpacity(0.1),
+                color: primaryColor.withValues(alpha: 0.1),
               ),
               bottom: BorderSide(
-                color: primaryColor.withOpacity(0.1),
+                color: primaryColor.withValues(alpha: 0.1),
               ),
             ),
           ),
@@ -263,7 +263,7 @@ class _ShareCardPageControllerState extends State<ShareCardPageController>
               Text(
                 '累计忍住辞职',
                 style: TextStyle(
-                  color: primaryColor.withOpacity(0.7),
+                  color: primaryColor.withValues(alpha: 0.7),
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
                 ),
@@ -288,7 +288,7 @@ class _ShareCardPageControllerState extends State<ShareCardPageController>
                     child: Text(
                       '天',
                       style: TextStyle(
-                        color: primaryColor.withOpacity(0.8),
+                        color: primaryColor.withValues(alpha: 0.8),
                         fontSize: 20,
                         fontWeight: FontWeight.w700,
                       ),
@@ -309,10 +309,10 @@ class _ShareCardPageControllerState extends State<ShareCardPageController>
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
           decoration: BoxDecoration(
-            color: primaryColor.withOpacity(0.08),
+            color: primaryColor.withValues(alpha: 0.08),
             borderRadius: BorderRadius.circular(20),
             border: Border.all(
-              color: primaryColor.withOpacity(0.1),
+              color: primaryColor.withValues(alpha: 0.1),
             ),
           ),
           child: Row(
@@ -342,7 +342,7 @@ class _ShareCardPageControllerState extends State<ShareCardPageController>
             '"人人都在上班，但不是每个人都甘心。"',
             textAlign: TextAlign.center,
             style: TextStyle(
-              color: primaryColor.withOpacity(0.5),
+              color: primaryColor.withValues(alpha: 0.5),
               fontSize: 13,
               fontStyle: FontStyle.italic,
               fontWeight: FontWeight.w600,
@@ -372,7 +372,7 @@ class _ShareCardPageControllerState extends State<ShareCardPageController>
                   Text(
                     'From App',
                     style: TextStyle(
-                      color: primaryColor.withOpacity(0.4),
+                      color: primaryColor.withValues(alpha: 0.4),
                       fontSize: 10,
                       fontWeight: FontWeight.w700,
                       letterSpacing: 2,
@@ -396,14 +396,14 @@ class _ShareCardPageControllerState extends State<ShareCardPageController>
                     children: [
                       Icon(
                         Icons.location_on,
-                        color: primaryColor.withOpacity(0.6),
+                        color: primaryColor.withValues(alpha: 0.6),
                         size: 14,
                       ),
                       const SizedBox(width: 2),
                       Text(
                         '$city · $industry',
                         style: TextStyle(
-                          color: primaryColor.withOpacity(0.6),
+                          color: primaryColor.withValues(alpha: 0.6),
                           fontSize: 12,
                           fontWeight: FontWeight.w600,
                         ),
@@ -415,7 +415,7 @@ class _ShareCardPageControllerState extends State<ShareCardPageController>
                     width: 60,
                     height: 4,
                     decoration: BoxDecoration(
-                      color: primaryColor.withOpacity(0.2),
+                      color: primaryColor.withValues(alpha: 0.2),
                       borderRadius: BorderRadius.circular(2),
                     ),
                     child: FractionallySizedBox(
@@ -444,14 +444,14 @@ class _ShareCardPageControllerState extends State<ShareCardPageController>
       children: [
         Icon(
           Icons.info_outline,
-          color: primaryColor.withOpacity(0.4),
+          color: primaryColor.withValues(alpha: 0.4),
           size: 16,
         ),
         const SizedBox(width: 6),
         Text(
           '长按图片或点击下方按钮保存',
           style: TextStyle(
-            color: primaryColor.withOpacity(0.4),
+            color: primaryColor.withValues(alpha: 0.4),
             fontSize: 12,
             fontWeight: FontWeight.w600,
           ),
@@ -477,7 +477,7 @@ class _ShareCardPageControllerState extends State<ShareCardPageController>
                   borderRadius: BorderRadius.circular(12),
                 ),
                 elevation: 4,
-                shadowColor: primaryColor.withOpacity(0.3),
+                shadowColor: primaryColor.withValues(alpha: 0.3),
               ),
               onPressed: _isSaving ? null : _saveImage,
               child: Row(
@@ -512,7 +512,7 @@ class _ShareCardPageControllerState extends State<ShareCardPageController>
                   borderRadius: BorderRadius.circular(12),
                 ),
                 side: BorderSide(
-                  color: primaryColor.withOpacity(0.2),
+                  color: primaryColor.withValues(alpha: 0.2),
                   width: 2,
                 ),
               ),

@@ -98,7 +98,7 @@ class _ReportPageControllerState extends State<ReportPageController>
               width: 40,
               height: 40,
               decoration: BoxDecoration(
-                color: primaryColor.withOpacity(0.1),
+                color: primaryColor.withValues(alpha: 0.1),
                 shape: BoxShape.circle,
               ),
               child: Icon(
@@ -145,7 +145,7 @@ class _ReportPageControllerState extends State<ReportPageController>
           Text(
             '这些数据，只属于真的忍过的人',
             style: TextStyle(
-              color: primaryColor.withOpacity(0.7),
+              color: primaryColor.withValues(alpha: 0.7),
               fontSize: 16,
               fontWeight: FontWeight.w500,
               height: 1.4,
@@ -164,11 +164,11 @@ class _ReportPageControllerState extends State<ReportPageController>
           color: isDarkMode ? const Color(0xFF18181b) : Colors.white,
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
-            color: primaryColor.withOpacity(0.05),
+            color: primaryColor.withValues(alpha: 0.05),
           ),
           boxShadow: [
             BoxShadow(
-              color: primaryColor.withOpacity(0.08),
+              color: primaryColor.withValues(alpha: 0.08),
               blurRadius: 20,
               offset: const Offset(0, 4),
             ),
@@ -211,7 +211,7 @@ class _ReportPageControllerState extends State<ReportPageController>
   Widget _buildDaysSection(Color primaryColor, bool isDarkMode) {
     return Container(
       decoration: BoxDecoration(
-        color: primaryColor.withOpacity(0.08),
+        color: primaryColor.withValues(alpha: 0.08),
         borderRadius: BorderRadius.circular(12),
         border: Border(
           left: BorderSide(
@@ -227,7 +227,7 @@ class _ReportPageControllerState extends State<ReportPageController>
           Text(
             '这一年，你忍住没辞职',
             style: TextStyle(
-              color: primaryColor.withOpacity(0.6),
+              color: primaryColor.withValues(alpha: 0.6),
               fontSize: 14,
               fontWeight: FontWeight.w500,
             ),
@@ -274,7 +274,7 @@ class _ReportPageControllerState extends State<ReportPageController>
             Text(
               '全国"忍者"排名',
               style: TextStyle(
-                color: primaryColor.withOpacity(0.7),
+                color: primaryColor.withValues(alpha: 0.7),
                 fontSize: 14,
                 fontWeight: FontWeight.w500,
               ),
@@ -294,7 +294,7 @@ class _ReportPageControllerState extends State<ReportPageController>
           width: double.infinity,
           height: 8,
           decoration: BoxDecoration(
-            color: primaryColor.withOpacity(0.1),
+            color: primaryColor.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(4),
           ),
           child: ClipRRect(
@@ -359,14 +359,14 @@ class _ReportPageControllerState extends State<ReportPageController>
         children: [
           Icon(
             Icons.coffee,
-            color: primaryColor.withOpacity(0.3),
+            color: primaryColor.withValues(alpha: 0.3),
             size: 40,
           ),
           const SizedBox(height: 8),
           Text(
             '不干了 - 重新定义职场情绪',
             style: TextStyle(
-              color: primaryColor.withOpacity(0.3),
+              color: primaryColor.withValues(alpha: 0.3),
               fontSize: 12,
               fontWeight: FontWeight.w500,
             ),

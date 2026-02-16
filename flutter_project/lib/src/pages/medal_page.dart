@@ -104,7 +104,7 @@ class _MedalPageControllerState extends State<MedalPageController>
               width: 40,
               height: 40,
               decoration: BoxDecoration(
-                color: primaryColor.withOpacity(0.1),
+                color: primaryColor.withValues(alpha: 0.1),
                 shape: BoxShape.circle,
               ),
               child: Icon(
@@ -138,7 +138,7 @@ class _MedalPageControllerState extends State<MedalPageController>
         Text(
           '有些坚持，老板永远看不见',
           style: TextStyle(
-            color: primaryColor.withOpacity(0.7),
+            color: primaryColor.withValues(alpha: 0.7),
             fontSize: 18,
             fontWeight: FontWeight.w600,
             height: 1.3,
@@ -184,20 +184,20 @@ class _MedalPageControllerState extends State<MedalPageController>
       decoration: BoxDecoration(
         color: isLocked
             ? (isDarkMode
-                ? primaryColor.withOpacity(0.1)
-                : Colors.white.withOpacity(0.5))
+                ? primaryColor.withValues(alpha: 0.1)
+                : Colors.white.withValues(alpha: 0.5))
             : Colors.white,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
           color: isLocked
-              ? warmGray.withOpacity(0.2)
-              : primaryColor.withOpacity(0.1),
+              ? warmGray.withValues(alpha: 0.2)
+              : primaryColor.withValues(alpha: 0.1),
         ),
         boxShadow: isLocked
             ? null
             : [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.05),
+                  color: Colors.black.withValues(alpha: 0.05),
                   blurRadius: 8,
                   offset: const Offset(0, 2),
                 ),
@@ -224,7 +224,7 @@ class _MedalPageControllerState extends State<MedalPageController>
                 width: 80,
                 height: 80,
                 decoration: BoxDecoration(
-                  color: primaryColor.withOpacity(0.05),
+                  color: primaryColor.withValues(alpha: 0.05),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Center(
@@ -276,7 +276,7 @@ class _MedalPageControllerState extends State<MedalPageController>
                       Text(
                         medal.description,
                         style: TextStyle(
-                          color: primaryColor.withOpacity(0.6),
+                          color: primaryColor.withValues(alpha: 0.6),
                           fontSize: 14,
                           fontWeight: FontWeight.w600,
                           height: 1.4,
@@ -287,7 +287,7 @@ class _MedalPageControllerState extends State<MedalPageController>
                       Text(
                         '解锁条件：连续签到 ${medal.requiredDays} 天',
                         style: TextStyle(
-                          color: primaryColor.withOpacity(0.6),
+                          color: primaryColor.withValues(alpha: 0.6),
                           fontSize: 12,
                           fontWeight: FontWeight.w500,
                           height: 1.4,
@@ -311,13 +311,13 @@ class _MedalPageControllerState extends State<MedalPageController>
           width: 60,
           height: 1,
           decoration: BoxDecoration(
-            color: primaryColor.withOpacity(0.2),
+            color: primaryColor.withValues(alpha: 0.2),
           ),
         ),
         const SizedBox(height: 32),
         Icon(
           Icons.local_florist,
-          color: primaryColor.withOpacity(0.2),
+          color: primaryColor.withValues(alpha: 0.2),
           size: 40,
         ),
       ],

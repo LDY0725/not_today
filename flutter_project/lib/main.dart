@@ -17,12 +17,12 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.brown,
         useMaterial3: true,
         colorScheme: ColorScheme.fromSeed(
-          seedColor: const Color(0xFF4a3621),
+          seedColor: Color(0xFF4a3621),
         ),
       ),
       darkTheme: ThemeData(
         colorScheme: ColorScheme.fromSeed(
-          seedColor: const Color(0xFF4a3621),
+          seedColor: Color(0xFF4a3621),
           brightness: Brightness.dark,
         ),
         useMaterial3: true,
@@ -53,6 +53,18 @@ class MyApp extends StatelessWidget {
         GetPage(
           name: '/report',
           page: () => const ReportPageController(),
+        ),
+        GetPage(
+          name: '/detail_report',
+          page: () => const DetailReportPageController(),
+        ),
+        GetPage(
+          name: '/payment',
+          page: () => const PaymentPageController(),
+        ),
+        GetPage(
+          name: '/report_share_card',
+          page: () => const ReportShareCardPageController(),
         ),
       ],
       unknownRoute: GetPage(

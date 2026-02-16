@@ -48,12 +48,12 @@ class PaymentPageController extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
       decoration: BoxDecoration(
-        color: (isDarkMode ? backgroundDark : backgroundLight).withOpacity(0.8),
+        color: (isDarkMode ? backgroundDark : backgroundLight).withValues(alpha: 0.8),
         border: Border(
           bottom: BorderSide(
             color: isDarkMode
-                ? Colors.white.withOpacity(0.1)
-                : Colors.black.withOpacity(0.05),
+                ? Colors.white.withValues(alpha: 0.1)
+                : Colors.black.withValues(alpha: 0.05),
           ),
         ),
       ),
@@ -68,8 +68,8 @@ class PaymentPageController extends StatelessWidget {
                 height: 40,
                 decoration: BoxDecoration(
                   color: isDarkMode
-                      ? Colors.white.withOpacity(0.1)
-                      : Colors.black.withOpacity(0.05),
+                      ? Colors.white.withValues(alpha: 0.1)
+                      : Colors.black.withValues(alpha: 0.05),
                   shape: BoxShape.circle,
                 ),
                 child: Icon(
@@ -101,17 +101,17 @@ class PaymentPageController extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         color: isDarkMode
-            ? const Color(0xFF1e293b).withOpacity(0.5)
+            ? const Color(0xFF1e293b).withValues(alpha: 0.5)
             : Colors.white,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
           color: isDarkMode
-              ? Colors.white.withOpacity(0.1)
-              : Colors.black.withOpacity(0.05),
+              ? Colors.white.withValues(alpha: 0.1)
+              : Colors.black.withValues(alpha: 0.05),
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
@@ -147,7 +147,7 @@ class PaymentPageController extends StatelessWidget {
                   '解锁深度分析与建议',
                   style: TextStyle(
                     color: isDarkMode
-                        ? Colors.white.withOpacity(0.6)
+                        ? Colors.white.withValues(alpha: 0.6)
                         : const Color(0xFF64748b),
                     fontSize: 14,
                     fontWeight: FontWeight.w400,
@@ -160,7 +160,7 @@ class PaymentPageController extends StatelessWidget {
             width: 64,
             height: 64,
             decoration: BoxDecoration(
-              color: primaryColor.withOpacity(0.1),
+              color: primaryColor.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(12),
             ),
             child: Icon(
@@ -181,7 +181,7 @@ class PaymentPageController extends StatelessWidget {
           '应付金额',
           style: TextStyle(
             color: isDarkMode
-                ? Colors.white.withOpacity(0.6)
+                ? Colors.white.withValues(alpha: 0.6)
                 : const Color(0xFF64748b),
             fontSize: 14,
             fontWeight: FontWeight.w400,
@@ -197,7 +197,7 @@ class PaymentPageController extends StatelessWidget {
               '¥',
               style: TextStyle(
                 color: isDarkMode
-                    ? Colors.white.withOpacity(0.6)
+                    ? Colors.white.withValues(alpha: 0.6)
                     : const Color(0xFF64748b),
                 fontSize: 20,
                 fontWeight: FontWeight.w400,
@@ -228,7 +228,7 @@ class PaymentPageController extends StatelessWidget {
             '选择支付方式',
             style: TextStyle(
               color: isDarkMode
-                  ? Colors.white.withOpacity(0.6)
+                  ? Colors.white.withValues(alpha: 0.6)
                   : const Color(0xFF64748b),
               fontSize: 12,
               fontWeight: FontWeight.w600,
@@ -295,20 +295,20 @@ class PaymentPageController extends StatelessWidget {
       child: Container(
         decoration: BoxDecoration(
           color: isDarkMode
-              ? const Color(0xFF1e293b).withOpacity(0.3)
+              ? const Color(0xFF1e293b).withValues(alpha: 0.3)
               : Colors.white,
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
             color: isSelected
                 ? primaryColor
                 : isDarkMode
-                    ? Colors.white.withOpacity(0.1)
-                    : Colors.black.withOpacity(0.05),
+                    ? Colors.white.withValues(alpha: 0.1)
+                    : Colors.black.withValues(alpha: 0.05),
             width: isSelected ? 2 : 1,
           ),
           boxShadow: [
             BoxShadow(
-              color: primaryColor.withOpacity(isSelected ? 0.1 : 0),
+              color: primaryColor.withValues(alpha: isSelected ? 0.1 : 0),
               blurRadius: 8,
               offset: const Offset(0, 2),
             ),
@@ -349,7 +349,7 @@ class PaymentPageController extends StatelessWidget {
                     description,
                     style: TextStyle(
                       color: isDarkMode
-                          ? Colors.white.withOpacity(0.5)
+                          ? Colors.white.withValues(alpha: 0.5)
                           : const Color(0xFF64748b),
                       fontSize: 12,
                       fontWeight: FontWeight.w400,
@@ -367,8 +367,8 @@ class PaymentPageController extends StatelessWidget {
                   color: isSelected
                       ? primaryColor
                       : isDarkMode
-                          ? Colors.white.withOpacity(0.3)
-                          : Colors.black.withOpacity(0.2),
+                          ? Colors.white.withValues(alpha: 0.3)
+                          : Colors.black.withValues(alpha: 0.2),
                   width: 2,
                 ),
                 color: isSelected ? primaryColor : Colors.transparent,
@@ -404,7 +404,7 @@ class PaymentPageController extends StatelessWidget {
                   borderRadius: BorderRadius.circular(12),
                 ),
                 elevation: 4,
-                shadowColor: primaryColor.withOpacity(0.3),
+                shadowColor: primaryColor.withValues(alpha: 0.3),
               ),
               onPressed: () {
                 Get.snackbar(
@@ -443,14 +443,14 @@ class PaymentPageController extends StatelessWidget {
             children: [
               Icon(
                 Icons.verified_user,
-                color: primaryColor.withOpacity(0.5),
+                color: primaryColor.withValues(alpha: 0.5),
                 size: 16,
               ),
               const SizedBox(width: 6),
               Text(
                 '¥1.9 一次性｜不订阅，不自动扣费',
                 style: TextStyle(
-                  color: primaryColor.withOpacity(0.5),
+                  color: primaryColor.withValues(alpha: 0.5),
                   fontSize: 12,
                   fontWeight: FontWeight.w400,
                 ),

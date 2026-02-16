@@ -99,7 +99,7 @@ class _ReportShareCardPageControllerState
               width: 40,
               height: 40,
               decoration: BoxDecoration(
-                color: primaryColor.withOpacity(0.1),
+                color: primaryColor.withValues(alpha: 0.1),
                 shape: BoxShape.circle,
               ),
               child: Icon(
@@ -137,11 +137,11 @@ class _ReportShareCardPageControllerState
         color: backgroundPaper,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: primaryColor.withOpacity(0.1),
+          color: primaryColor.withValues(alpha: 0.1),
         ),
         boxShadow: [
           BoxShadow(
-            color: primaryColor.withOpacity(0.15),
+            color: primaryColor.withValues(alpha: 0.15),
             blurRadius: 30,
             offset: const Offset(0, 20),
             spreadRadius: -10,
@@ -167,7 +167,7 @@ class _ReportShareCardPageControllerState
                   width: 48,
                   height: 2,
                   decoration: BoxDecoration(
-                    color: primaryColor.withOpacity(0.3),
+                    color: primaryColor.withValues(alpha: 0.3),
                   ),
                 ),
                 const SizedBox(height: 32),
@@ -214,10 +214,10 @@ class _ReportShareCardPageControllerState
           Container(
             padding: const EdgeInsets.fromLTRB(24, 16, 24, 20),
             decoration: BoxDecoration(
-              color: backgroundPaper.withOpacity(0.5),
+              color: backgroundPaper.withValues(alpha: 0.5),
               border: Border(
                 top: BorderSide(
-                  color: primaryColor.withOpacity(0.05),
+                  color: primaryColor.withValues(alpha: 0.05),
                 ),
               ),
             ),
@@ -230,7 +230,7 @@ class _ReportShareCardPageControllerState
                       Text(
                         '$_city · $_industry',
                         style: TextStyle(
-                          color: primaryColor.withOpacity(0.6),
+                          color: primaryColor.withValues(alpha: 0.6),
                           fontSize: 12,
                           fontWeight: FontWeight.w500,
                         ),
@@ -289,7 +289,7 @@ class _ReportShareCardPageControllerState
         Text(
           label,
           style: TextStyle(
-            color: primaryColor.withOpacity(0.5),
+            color: primaryColor.withValues(alpha: 0.5),
             fontSize: 10,
             fontWeight: FontWeight.w600,
             letterSpacing: 2,
@@ -301,8 +301,8 @@ class _ReportShareCardPageControllerState
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             decoration: BoxDecoration(
               border: Border(
-                top: BorderSide(color: primaryColor.withOpacity(0.1)),
-                bottom: BorderSide(color: primaryColor.withOpacity(0.1)),
+                top: BorderSide(color: primaryColor.withValues(alpha: 0.1)),
+                bottom: BorderSide(color: primaryColor.withValues(alpha: 0.1)),
               ),
             ),
             child: Text(
@@ -364,7 +364,7 @@ class _ReportShareCardPageControllerState
                 borderRadius: BorderRadius.circular(12),
               ),
               elevation: 6,
-              shadowColor: primaryColor.withOpacity(0.3),
+              shadowColor: primaryColor.withValues(alpha: 0.3),
             ),
             onPressed: () {
               Get.snackbar(
@@ -406,7 +406,7 @@ class _ReportShareCardPageControllerState
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
                 side: BorderSide(
-                  color: primaryColor.withOpacity(0.2),
+                  color: primaryColor.withValues(alpha: 0.2),
                   width: 2,
                 ),
               ),
@@ -432,7 +432,7 @@ class _ReportShareCardPageControllerState
         '图片将保存至系统相册，快去朋友圈分享你的职业勋章吧',
         textAlign: TextAlign.center,
         style: TextStyle(
-          color: primaryColor.withOpacity(0.5),
+          color: primaryColor.withValues(alpha: 0.5),
           fontSize: 12,
           fontWeight: FontWeight.w400,
         ),
