@@ -70,10 +70,23 @@ class _HomePageControllerState extends State<HomePageController>
     setLoading(true);
     _userDataService = await UserDataService.getInstance();
     final userData = await _userDataService.getUserData();
+
     setState(() {
       _selectedCity = userData.city;
       _selectedIndustry = userData.industry;
     });
+
+    final now = DateTime.now();
+    final lastUpdated = userData.lastUpdated;
+
+    if (lastUpdated != null &&
+        lastUpdated.year == now.year &&
+        lastUpdated.month == now.month &&
+        lastUpdated.day == now.day) {
+      Get.offAllNamed('/result');
+      return;
+    }
+
     await Future.delayed(const Duration(milliseconds: 500));
     setLoading(false);
   }
@@ -265,7 +278,7 @@ class _HomePageControllerState extends State<HomePageController>
                     city: _selectedCity,
                     industry: _selectedIndustry,
                   );
-                  Get.replace('/result');
+                  Get.toNamed('/result');
                 },
                 child: const Text(
                   '我不干了！',
