@@ -72,23 +72,6 @@ class _DetailReportPageControllerState
       body: SafeArea(
         child: Stack(
           children: [
-            Positioned.fill(
-              child: CustomPaint(
-                painter: DetailGrainTexturePainter(
-                  color: primaryColor.withValues(alpha: 0.03),
-                ),
-              ),
-            ),
-            Positioned(
-              top: -100,
-              right: -80,
-              child: _buildDecorativeCircle(primaryColor, 200),
-            ),
-            Positioned(
-              bottom: 150,
-              left: -100,
-              child: _buildDecorativeCircle(primaryColor, 250),
-            ),
             SafeArea(
               child: Column(
                 children: [
@@ -164,6 +147,7 @@ class _DetailReportPageControllerState
                 fontSize: 14,
                 fontWeight: FontWeight.w600,
                 letterSpacing: 3,
+                fontFamily: 'NotoSerifSC',
               ),
             ),
           ),
@@ -193,6 +177,7 @@ class _DetailReportPageControllerState
                   fontSize: 56,
                   fontWeight: FontWeight.w900,
                   letterSpacing: -2,
+                  fontFamily: 'NotoSerifSC',
                 ),
               ),
               Padding(
@@ -203,6 +188,7 @@ class _DetailReportPageControllerState
                     color: primaryColor.withValues(alpha: 0.6),
                     fontSize: 20,
                     fontWeight: FontWeight.w600,
+                    fontFamily: 'NotoSerifSC',
                   ),
                 ),
               ),
@@ -224,15 +210,42 @@ class _DetailReportPageControllerState
       title: '最想辞职原因',
       child: Column(
         children: [
-          Text(
-            '工作内容 ${primaryColor.withValues(alpha: 0.3)} 情绪消耗',
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              color: isDarkMode ? Colors.white : primaryColor,
-              fontSize: 22,
-              fontWeight: FontWeight.w700,
-              height: 1.3,
-            ),
+          Row(
+            children: [
+              Text(
+                '工作内容',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: isDarkMode ? Colors.white : primaryColor,
+                  fontSize: 28,
+                  fontWeight: FontWeight.w700,
+                  fontFamily: 'NotoSerifSC',
+                  height: 1.3,
+                ),
+              ),
+              Text(
+                '+',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: primaryColor,
+                  fontSize: 22,
+                  fontWeight: FontWeight.w700,
+                  height: 1.3,
+                  fontFamily: 'NotoSerifSC',
+                ),
+              ),
+              Text(
+                '情绪消耗',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: isDarkMode ? Colors.white : primaryColor,
+                  fontSize: 28,
+                  fontWeight: FontWeight.w700,
+                  height: 1.3,
+                  fontFamily: 'NotoSerifSC',
+                ),
+              ),
+            ],
           ),
           const SizedBox(height: 20),
           Text(
@@ -243,6 +256,8 @@ class _DetailReportPageControllerState
               fontSize: 12,
               fontStyle: FontStyle.italic,
               height: 1.6,
+              letterSpacing: -0.5,
+              fontFamily: 'NotoSerifSC',
             ),
           ),
         ],
@@ -279,6 +294,7 @@ class _DetailReportPageControllerState
                                 : primaryColor.withValues(alpha: 0.8),
                             fontSize: 12,
                             fontWeight: FontWeight.w500,
+                            fontFamily: 'NotoSerifSC',
                           ),
                         ),
                       ),
@@ -290,6 +306,7 @@ class _DetailReportPageControllerState
                               : primaryColor.withValues(alpha: 0.5),
                           fontSize: 12,
                           fontWeight: FontWeight.w500,
+                          fontFamily: 'NotoSerifSC',
                         ),
                       ),
                     ],
@@ -327,6 +344,7 @@ class _DetailReportPageControllerState
                   fontSize: 56,
                   fontWeight: FontWeight.w900,
                   letterSpacing: -2,
+                  fontFamily: 'NotoSerifSC',
                 ),
               ),
               Padding(
@@ -337,6 +355,7 @@ class _DetailReportPageControllerState
                     color: primaryColor.withValues(alpha: 0.6),
                     fontSize: 20,
                     fontWeight: FontWeight.w600,
+                    fontFamily: 'NotoSerifSC',
                   ),
                 ),
               ),
@@ -344,7 +363,6 @@ class _DetailReportPageControllerState
           ),
           const SizedBox(height: 24),
           Row(
-            mainAxisSize: MainAxisSize.min,
             children: List.generate(4, (index) {
               final opacity = (index + 1) * 0.25;
               return Container(
@@ -407,6 +425,7 @@ class _DetailReportPageControllerState
                   color: primaryColor.withValues(alpha: 0.4),
                   fontSize: 14,
                   fontWeight: FontWeight.w500,
+                  fontFamily: 'NotoSerifSC',
                 ),
               ),
             ],
@@ -452,6 +471,7 @@ class _DetailReportPageControllerState
         style: TextStyle(
           color: primaryColor.withValues(alpha: 0.3),
           fontSize: 14,
+          fontFamily: 'NotoSerifSC',
           fontWeight: FontWeight.w400,
         ),
       ),
@@ -492,6 +512,7 @@ class _DetailReportPageControllerState
                   fontSize: 16,
                   fontWeight: FontWeight.w600,
                   letterSpacing: 1,
+                  fontFamily: 'NotoSerifSC',
                 ),
               ),
             ],
@@ -502,30 +523,30 @@ class _DetailReportPageControllerState
   }
 }
 
-class DetailGrainTexturePainter extends CustomPainter {
-  final Color color;
+// class DetailGrainTexturePainter extends CustomPainter {
+//   final Color color;
 
-  DetailGrainTexturePainter({required this.color});
+//   DetailGrainTexturePainter({required this.color});
 
-  @override
-  void paint(Canvas canvas, Size size) {
-    final paint = Paint()
-      ..color = color
-      ..style = PaintingStyle.fill;
+//   @override
+//   void paint(Canvas canvas, Size size) {
+//     final paint = Paint()
+//       ..color = color
+//       ..style = PaintingStyle.fill;
 
-    final random = math.Random(42);
-    for (int i = 0; i < 200; i++) {
-      final x = random.nextDouble() * size.width;
-      final y = random.nextDouble() * size.height;
-      final radius = random.nextDouble() * 1.5;
-      canvas.drawCircle(
-        Offset(x, y),
-        radius,
-        paint,
-      );
-    }
-  }
+//     final random = math.Random(42);
+//     for (int i = 0; i < 200; i++) {
+//       final x = random.nextDouble() * size.width;
+//       final y = random.nextDouble() * size.height;
+//       final radius = random.nextDouble() * 1.5;
+//       canvas.drawCircle(
+//         Offset(x, y),
+//         radius,
+//         paint,
+//       );
+//     }
+//   }
 
-  @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
-}
+//   @override
+//   bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+// }

@@ -139,6 +139,7 @@ class _ReportPageControllerState extends State<ReportPageController>
               fontWeight: FontWeight.w800,
               height: 1.2,
               letterSpacing: -0.5,
+              fontFamily: 'NotoSerifSC',
             ),
           ),
           const SizedBox(height: 12),
@@ -149,6 +150,7 @@ class _ReportPageControllerState extends State<ReportPageController>
               fontSize: 16,
               fontWeight: FontWeight.w500,
               height: 1.4,
+              fontFamily: 'NotoSerifSC',
             ),
           ),
         ],
@@ -192,6 +194,7 @@ class _ReportPageControllerState extends State<ReportPageController>
                     color: isDarkMode ? Colors.white : primaryColor,
                     fontSize: 18,
                     fontWeight: FontWeight.w700,
+                    fontFamily: 'NotoSerifSC',
                   ),
                 ),
               ],
@@ -230,6 +233,7 @@ class _ReportPageControllerState extends State<ReportPageController>
               color: primaryColor.withValues(alpha: 0.6),
               fontSize: 14,
               fontWeight: FontWeight.w500,
+              fontFamily: 'NotoSerifSC',
             ),
           ),
           const SizedBox(height: 8),
@@ -244,6 +248,7 @@ class _ReportPageControllerState extends State<ReportPageController>
                   fontSize: 44,
                   fontWeight: FontWeight.w800,
                   height: 1,
+                  fontFamily: 'NotoSerifSC',
                 ),
               ),
               Padding(
@@ -254,6 +259,7 @@ class _ReportPageControllerState extends State<ReportPageController>
                     color: isDarkMode ? Colors.white : primaryColor,
                     fontSize: 18,
                     fontWeight: FontWeight.w700,
+                    fontFamily: 'NotoSerifSC',
                   ),
                 ),
               ),
@@ -277,6 +283,7 @@ class _ReportPageControllerState extends State<ReportPageController>
                 color: primaryColor.withValues(alpha: 0.7),
                 fontSize: 14,
                 fontWeight: FontWeight.w500,
+                fontFamily: 'NotoSerifSC',
               ),
             ),
             Text(
@@ -284,6 +291,7 @@ class _ReportPageControllerState extends State<ReportPageController>
               style: TextStyle(
                 color: isDarkMode ? Colors.white : primaryColor,
                 fontSize: 12,
+                fontFamily: 'NotoSerifSC',
                 fontWeight: FontWeight.w700,
               ),
             ),
@@ -329,7 +337,7 @@ class _ReportPageControllerState extends State<ReportPageController>
           elevation: 0,
         ),
         onPressed: () {
-          Get.toNamed('/share_card');
+          Get.toNamed('/detail_report');
         },
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -343,6 +351,7 @@ class _ReportPageControllerState extends State<ReportPageController>
               '查看 / 生成分享卡',
               style: TextStyle(
                 fontSize: 14,
+                fontFamily: 'NotoSerifSC',
                 fontWeight: FontWeight.w700,
               ),
             ),
@@ -353,25 +362,30 @@ class _ReportPageControllerState extends State<ReportPageController>
   }
 
   Widget _buildBottomDecoration(Color primaryColor) {
-    return Padding(
-      padding: const EdgeInsets.only(top: 48, bottom: 32),
-      child: Column(
-        children: [
-          Icon(
-            Icons.coffee,
-            color: primaryColor.withValues(alpha: 0.3),
-            size: 40,
-          ),
-          const SizedBox(height: 8),
-          Text(
-            '不干了 - 重新定义职场情绪',
-            style: TextStyle(
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.only(top: 48, bottom: 32),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              Icons.coffee,
               color: primaryColor.withValues(alpha: 0.3),
-              fontSize: 12,
-              fontWeight: FontWeight.w500,
+              size: 40,
             ),
-          ),
-        ],
+            const SizedBox(height: 8),
+            Text(
+              '不干了 - 重新定义职场情绪',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: primaryColor.withValues(alpha: 0.3),
+                fontFamily: 'NotoSerifSC',
+                fontSize: 12,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

@@ -265,7 +265,7 @@ class _HomePageControllerState extends State<HomePageController>
                     city: _selectedCity,
                     industry: _selectedIndustry,
                   );
-                  Get.toNamed('/result');
+                  Get.replace('/result');
                 },
                 child: const Text(
                   '我不干了！',
