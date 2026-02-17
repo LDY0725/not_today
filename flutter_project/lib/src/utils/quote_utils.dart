@@ -50,6 +50,32 @@ class QuoteUtils {
     ],
   };
 
+  static const List<String> cities = [
+    '北京',
+    '上海',
+    '广州',
+    '深圳',
+    '杭州',
+    '成都',
+    '武汉',
+    '南京',
+    '西安',
+    '重庆',
+  ];
+
+  static const List<String> industries = [
+    '产品经理',
+    '设计师',
+    '前端开发',
+    '后端开发',
+    '移动端开发',
+    '运营',
+    '市场',
+    '人事',
+    '财务',
+    '其他',
+  ];
+
   static String getRandomQuote(QuoteType type) {
     final quotes = _quotes[type];
     if (quotes == null || quotes.isEmpty) {

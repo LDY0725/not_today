@@ -20,11 +20,11 @@ class _HomePageControllerState extends State<HomePageController>
   late Animation<double> _cupScaleAnimation;
   bool _showButton = false;
   int _tapCount = 0;
+  String _selectedCity = '';
+  String _selectedIndustry = '';
 
-  @override
   String get pageTitle => '';
 
-  @override
   bool get showAppBar => false;
 
   @override
@@ -84,6 +84,124 @@ class _HomePageControllerState extends State<HomePageController>
         ..reset()
         ..forward();
     }
+  }
+
+  void _showCityPicker() {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (context) => _buildSelectionSheet(
+        title: '选择城市',
+        items: QuoteUtils.cities,
+        selectedValue: _selectedCity,
+        onSelect: (value) {
+          setState(() {
+            _selectedCity = value;
+          });
+          Navigator.of(context).pop();
+        },
+      ),
+    );
+  }
+
+  void _showIndustryPicker() {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (context) => _buildSelectionSheet(
+        title: '选择行业',
+        items: QuoteUtils.industries,
+        selectedValue: _selectedIndustry,
+        onSelect: (value) {
+          setState(() {
+            _selectedIndustry = value;
+          });
+          Navigator.of(context).pop();
+        },
+      ),
+    );
+  }
+
+  Widget _buildSelectionSheet({
+    required String title,
+    required List<String> items,
+    required String selectedValue,
+    required Function(String) onSelect,
+  }) {
+    final primaryColor = const Color(0xFF4a3621);
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+
+    return Container(
+      decoration: BoxDecoration(
+        color: isDarkMode ? const Color(0xFF1d1915) : Colors.white,
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            width: 40,
+            height: 4,
+            margin: const EdgeInsets.symmetric(vertical: 12),
+            decoration: BoxDecoration(
+              color: primaryColor.withValues(alpha: 0.3),
+              borderRadius: BorderRadius.circular(2),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(20),
+            child: Text(
+              title,
+              style: TextStyle(
+                color: primaryColor,
+                fontSize: 18,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+          Flexible(
+            child: SingleChildScrollView(
+              child: Wrap(
+                spacing: 12,
+                runSpacing: 12,
+                children: items.map((item) {
+                  final isSelected = item == selectedValue;
+                  return GestureDetector(
+                    onTap: () => onSelect(item),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 20,
+                        vertical: 12,
+                      ),
+                      decoration: BoxDecoration(
+                        color: isSelected
+                            ? primaryColor
+                            : primaryColor.withValues(alpha: 0.08),
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(
+                          color: isSelected
+                              ? primaryColor
+                              : primaryColor.withValues(alpha: 0.2),
+                        ),
+                      ),
+                      child: Text(
+                        item,
+                        style: TextStyle(
+                          color: isSelected ? Colors.white : primaryColor,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ),
+                  );
+                }).toList(),
+              ),
+            ),
+          ),
+          const SizedBox(height: 20),
+        ],
+      ),
+    );
   }
 
   @override
@@ -150,7 +268,7 @@ class _HomePageControllerState extends State<HomePageController>
                 color: primaryColor,
                 fontSize: 14,
                 fontWeight: FontWeight.bold,
-                letterSpacing: 4,
+                letterSpacing: 0,
               ),
             ),
           ),
@@ -172,6 +290,7 @@ class _HomePageControllerState extends State<HomePageController>
             fontWeight: FontWeight.w900,
             height: 1.1,
             letterSpacing: -1,
+            fontFamily: 'NotoSerifSC',
           ),
         ),
         const SizedBox(height: 16),
@@ -185,6 +304,7 @@ class _HomePageControllerState extends State<HomePageController>
               fontSize: 14,
               fontWeight: FontWeight.w500,
               height: 1.5,
+              fontFamily: 'NotoSerifSC',
             ),
           ),
         ),
@@ -317,6 +437,7 @@ class _HomePageControllerState extends State<HomePageController>
           fontSize: 12,
           fontWeight: FontWeight.w500,
           letterSpacing: 2,
+          fontFamily: 'NotoSerifSC',
         ),
       ),
     );
@@ -330,18 +451,20 @@ class _HomePageControllerState extends State<HomePageController>
           Expanded(
             child: _buildSelector(
               primaryColor: primaryColor,
-              label: '你在哪个城市',
+              label: _selectedCity.isEmpty ? '你在哪个城市' : _selectedCity,
               icon: Icons.expand_more,
               isDarkMode: isDarkMode,
+              onTap: _showCityPicker,
             ),
           ),
           const SizedBox(width: 16),
           Expanded(
             child: _buildSelector(
               primaryColor: primaryColor,
-              label: '你做什么行业',
+              label: _selectedIndustry.isEmpty ? '你做什么行业' : _selectedIndustry,
               icon: Icons.expand_more,
               isDarkMode: isDarkMode,
+              onTap: _showIndustryPicker,
             ),
           ),
         ],
@@ -354,6 +477,7 @@ class _HomePageControllerState extends State<HomePageController>
     required String label,
     required IconData icon,
     required bool isDarkMode,
+    required VoidCallback onTap,
   }) {
     return Container(
       decoration: BoxDecoration(
@@ -372,15 +496,7 @@ class _HomePageControllerState extends State<HomePageController>
       ),
       child: InkWell(
         borderRadius: BorderRadius.circular(8),
-        onTap: () {
-          Get.snackbar(
-            '提示',
-            '选择功能开发中...',
-            snackPosition: SnackPosition.BOTTOM,
-            backgroundColor: primaryColor,
-            colorText: Colors.white,
-          );
-        },
+        onTap: onTap,
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
           child: Row(

@@ -6,9 +6,9 @@ class PaymentPageController extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final primaryColor = const Color(0xFFec5b13);
-    final backgroundLight = const Color(0xFFf8f6f6);
-    final backgroundDark = const Color(0xFF121212);
+    const primaryColor = Color(0xFFec5b13);
+    const backgroundLight = Color(0xFFf8f6f6);
+    const backgroundDark = Color(0xFF121212);
 
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
 
@@ -41,14 +41,15 @@ class PaymentPageController extends StatelessWidget {
   }
 
   Widget _buildTopNavigation(Color primaryColor, bool isDarkMode) {
-    final bgLight = const Color(0xFFf8f6f6);
-    final bgDark = const Color(0xFF121212);
-    final backgroundLight = bgLight;
-    final backgroundDark = bgDark;
+    const bgLight = const Color(0xFFf8f6f6);
+    const bgDark = const Color(0xFF121212);
+    const backgroundLight = bgLight;
+    const backgroundDark = bgDark;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
       decoration: BoxDecoration(
-        color: (isDarkMode ? backgroundDark : backgroundLight).withValues(alpha: 0.8),
+        color: (isDarkMode ? backgroundDark : backgroundLight)
+            .withValues(alpha: 0.8),
         border: Border(
           bottom: BorderSide(
             color: isDarkMode
