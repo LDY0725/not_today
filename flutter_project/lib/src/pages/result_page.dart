@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_project/src/utils/index.dart';
 import 'package:get/get.dart';
 import 'dart:async';
 import 'dart:math' as math;
@@ -226,7 +227,7 @@ class _ResultPageControllerState extends State<ResultPageController>
           children: [
             const SizedBox(height: 40),
             Text(
-              '今天，你还是没真的走',
+              QuoteUtils.getRandomQuote(QuoteType.resultTop),
               textAlign: TextAlign.center,
               style: TextStyle(
                 color: primaryColor.withValues(alpha: 0.7),
@@ -310,7 +311,7 @@ class _ResultPageControllerState extends State<ResultPageController>
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 40),
       child: Text(
-        '你不是没勇气，\n是现在的你更清楚代价。',
+        QuoteUtils.getRandomQuote(QuoteType.resultBottom),
         textAlign: TextAlign.center,
         style: TextStyle(
           color: primaryColor.withValues(alpha: 0.8),
@@ -452,8 +453,9 @@ class _ResultPageControllerState extends State<ResultPageController>
                   width: 2,
                 ),
           elevation: isPrimary ? 4 : 0,
-          shadowColor:
-              isPrimary ? primaryColor.withValues(alpha: 0.3) : Colors.transparent,
+          shadowColor: isPrimary
+              ? primaryColor.withValues(alpha: 0.3)
+              : Colors.transparent,
         ),
         onPressed: onPressed,
         child: Row(

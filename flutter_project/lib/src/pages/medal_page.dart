@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_project/src/utils/quote_utils.dart';
 import 'package:get/get.dart';
 import 'dart:convert';
 import 'base_page.dart';
@@ -136,7 +137,7 @@ class _MedalPageControllerState extends State<MedalPageController>
         ),
         const SizedBox(height: 8),
         Text(
-          '有些坚持，老板永远看不见',
+          QuoteUtils.getRandomQuote(QuoteType.modal),
           style: TextStyle(
             color: primaryColor.withValues(alpha: 0.7),
             fontSize: 18,

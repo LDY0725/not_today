@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_project/src/utils/quote_utils.dart';
 import 'package:get/get.dart';
 import 'base_page.dart';
 import '../services/user_data_service.dart';
@@ -177,7 +178,7 @@ class _HomePageControllerState extends State<HomePageController>
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 32),
           child: Text(
-            '有时候想离开，只是想确认自己还有选择。',
+            QuoteUtils.getRandomQuote(QuoteType.homePage),
             textAlign: TextAlign.center,
             style: TextStyle(
               color: primaryColor.withValues(alpha: 0.6),
@@ -251,7 +252,8 @@ class _HomePageControllerState extends State<HomePageController>
                     height: 180,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color: primaryColor.withValues(alpha: isDarkMode ? 0.1 : 0.05),
+                      color: primaryColor.withValues(
+                          alpha: isDarkMode ? 0.1 : 0.05),
                     ),
                     child: Center(
                       child: CustomPaint(
