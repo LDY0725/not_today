@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_project/src/utils/quote_utils.dart';
 import 'package:get/get.dart';
-import 'dart:convert';
 import 'base_page.dart';
-import '../cache/cache_manager.dart';
 import '../models/medal.dart';
-import '../models/user_data.dart';
+import '../services/user_data_service.dart';
 
 class MedalPageController extends StatefulWidget {
   const MedalPageController({super.key});
@@ -17,8 +15,7 @@ class MedalPageController extends StatefulWidget {
 class _MedalPageControllerState extends State<MedalPageController>
     with BasePageController {
   List<Medal> _medals = [];
-  int _currentStreak = 0;
-
+  final String _quote = QuoteUtils.getRandomQuote(QuoteType.modal);
   @override
   String get pageTitle => '我的忍耐勋章';
 
@@ -30,25 +27,10 @@ class _MedalPageControllerState extends State<MedalPageController>
     setLoading(true);
     try {
       final medalService = MedalService.getInstance();
-
-      int currentStreak = _currentStreak;
-      if (currentStreak <= 0) {
-        final cacheManager = await CacheManager.getInstance();
-        final jsonString = await cacheManager.getString(CacheKeys.userData);
-        if (jsonString != null) {
-          try {
-            final userData = jsonDecode(jsonString);
-            currentStreak = userData['days'] ?? 0;
-          } catch (e) {
-            currentStreak = 128;
-          }
-        } else {
-          currentStreak = 128;
-        }
-      }
-
+      final userDataService = await UserDataService.getInstance();
+      final userData = await userDataService.getUserData();
+      final currentStreak = userData.days > 0 ? userData.days : 0;
       setState(() {
-        _currentStreak = currentStreak;
         _medals = medalService.getAllMedals(currentStreak);
       });
     } catch (e) {
@@ -133,16 +115,19 @@ class _MedalPageControllerState extends State<MedalPageController>
             fontWeight: FontWeight.w800,
             height: 1.2,
             letterSpacing: -0.5,
+            fontFamily: 'NotoSerifSC',
           ),
         ),
         const SizedBox(height: 8),
         Text(
-          QuoteUtils.getRandomQuote(QuoteType.modal),
+          _quote,
           style: TextStyle(
             color: primaryColor.withValues(alpha: 0.7),
             fontSize: 18,
             fontWeight: FontWeight.w600,
             height: 1.3,
+            fontFamily: 'NotoSerifSC',
+            letterSpacing: -0.5,
           ),
         ),
       ],
@@ -258,6 +243,7 @@ class _MedalPageControllerState extends State<MedalPageController>
                             fontSize: 10,
                             fontWeight: FontWeight.w800,
                             letterSpacing: 1,
+                            fontFamily: 'NotoSerifSC',
                           ),
                         ),
                       ),
@@ -270,6 +256,7 @@ class _MedalPageControllerState extends State<MedalPageController>
                         fontSize: 20,
                         fontWeight: FontWeight.w700,
                         height: 1.2,
+                        fontFamily: 'NotoSerifSC',
                       ),
                     ),
                     if (medal.isUnlocked) ...[
@@ -280,6 +267,7 @@ class _MedalPageControllerState extends State<MedalPageController>
                           color: primaryColor.withValues(alpha: 0.6),
                           fontSize: 14,
                           fontWeight: FontWeight.w600,
+                          fontFamily: 'NotoSerifSC',
                           height: 1.4,
                         ),
                       ),
@@ -292,6 +280,7 @@ class _MedalPageControllerState extends State<MedalPageController>
                           fontSize: 12,
                           fontWeight: FontWeight.w500,
                           height: 1.4,
+                          fontFamily: 'NotoSerifSC',
                         ),
                       ),
                     ],

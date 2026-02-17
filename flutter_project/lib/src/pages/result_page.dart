@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_project/src/utils/index.dart';
 import 'package:get/get.dart';
 import 'dart:async';
-import 'dart:math' as math;
 import 'base_page.dart';
 import '../cache/cache_manager.dart';
 import '../models/user_data.dart';
+import '../services/quote_service.dart';
 
 class ResultPageController extends StatefulWidget {
   const ResultPageController({super.key});
@@ -21,6 +21,9 @@ class _ResultPageControllerState extends State<ResultPageController>
   late Animation<double> _numberAnimation;
   int _displayedDays = 0;
   UserData _userData = UserData();
+  late String _resultTopText;
+  late String _resultBottomText;
+  late QuoteService _quoteService;
 
   @override
   String get pageTitle => '今日记录';
@@ -51,6 +54,12 @@ class _ResultPageControllerState extends State<ResultPageController>
   void loadData() async {
     setLoading(true);
     try {
+      _quoteService = await QuoteService.getInstance();
+      setState(() {
+        _resultTopText = _quoteService.resultTopText;
+        _resultBottomText = _quoteService.resultBottomText;
+      });
+
       final cacheManager = await CacheManager.getInstance();
       final jsonString = await cacheManager.getString(CacheKeys.userData);
 
@@ -124,7 +133,6 @@ class _ResultPageControllerState extends State<ResultPageController>
                       children: [
                         _buildMainContent(primaryColor, isDarkMode),
                         _buildActionButtons(primaryColor, isDarkMode),
-                        _buildBranding(primaryColor),
                       ],
                     ),
                   ),
@@ -152,61 +160,35 @@ class _ResultPageControllerState extends State<ResultPageController>
 
   Widget _buildTopNavigation(Color primaryColor) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+      padding: const EdgeInsets.all(16.0),
       child: Row(
         children: [
-          IconButton(
-            onPressed: () => Get.back(),
-            icon: Container(
-              width: 40,
-              height: 40,
-              decoration: BoxDecoration(
-                color: primaryColor.withValues(alpha: 0.1),
-                shape: BoxShape.circle,
-              ),
-              child: Icon(
-                Icons.arrow_back_ios_new,
-                color: primaryColor,
-                size: 20,
-              ),
+          Container(
+            width: 40,
+            height: 40,
+            decoration: BoxDecoration(
+              color: primaryColor.withValues(alpha: 0.1),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Icon(
+              Icons.coffee,
+              color: primaryColor,
+              size: 24,
             ),
           ),
           Expanded(
             child: Text(
-              '今日记录',
+              '不干了 / QUIT',
               textAlign: TextAlign.center,
               style: TextStyle(
-                color: primaryColor.withValues(alpha: 0.6),
-                fontSize: 14,
-                fontWeight: FontWeight.w600,
-                letterSpacing: 2,
-              ),
-            ),
-          ),
-          IconButton(
-            onPressed: () {
-              Get.snackbar(
-                '更多',
-                '功能开发中...',
-                snackPosition: SnackPosition.BOTTOM,
-                backgroundColor: primaryColor,
-                colorText: Colors.white,
-              );
-            },
-            icon: Container(
-              width: 40,
-              height: 40,
-              decoration: BoxDecoration(
-                color: primaryColor.withValues(alpha: 0.1),
-                shape: BoxShape.circle,
-              ),
-              child: Icon(
-                Icons.more_horiz,
                 color: primaryColor,
-                size: 20,
+                fontSize: 14,
+                fontWeight: FontWeight.bold,
+                letterSpacing: 0,
               ),
             ),
           ),
+          const SizedBox(width: 40),
         ],
       ),
     );
@@ -227,12 +209,13 @@ class _ResultPageControllerState extends State<ResultPageController>
           children: [
             const SizedBox(height: 40),
             Text(
-              QuoteUtils.getRandomQuote(QuoteType.resultTop),
+              _resultTopText,
               textAlign: TextAlign.center,
               style: TextStyle(
                 color: primaryColor.withValues(alpha: 0.7),
                 fontSize: 18,
                 fontWeight: FontWeight.w500,
+                fontFamily: 'NotoSerifSC',
                 height: 1.3,
               ),
             ),
@@ -263,6 +246,7 @@ class _ResultPageControllerState extends State<ResultPageController>
               fontSize: 28,
               fontWeight: FontWeight.w700,
               height: 1.2,
+              fontFamily: 'NotoSerifSC',
             ),
           ),
           const SizedBox(height: 8),
@@ -283,6 +267,7 @@ class _ResultPageControllerState extends State<ResultPageController>
                       fontSize: 140,
                       fontWeight: FontWeight.w900,
                       height: 1,
+                      fontFamily: 'NotoSerifSC',
                       letterSpacing: -4,
                     ),
                   );
@@ -297,6 +282,7 @@ class _ResultPageControllerState extends State<ResultPageController>
                     fontSize: 36,
                     fontWeight: FontWeight.w700,
                     height: 1,
+                    fontFamily: 'NotoSerifSC',
                   ),
                 ),
               ),
@@ -311,12 +297,13 @@ class _ResultPageControllerState extends State<ResultPageController>
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 40),
       child: Text(
-        QuoteUtils.getRandomQuote(QuoteType.resultBottom),
+        _resultBottomText,
         textAlign: TextAlign.center,
         style: TextStyle(
           color: primaryColor.withValues(alpha: 0.8),
           fontSize: 18,
           fontWeight: FontWeight.w500,
+          fontFamily: 'NotoSerifSC',
           height: 1.6,
         ),
       ),
@@ -352,6 +339,7 @@ class _ResultPageControllerState extends State<ResultPageController>
               fontSize: 14,
               fontWeight: FontWeight.w500,
               letterSpacing: 1,
+              fontFamily: 'NotoSerifSC',
             ),
           ),
         ],
@@ -471,41 +459,7 @@ class _ResultPageControllerState extends State<ResultPageController>
               style: const TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w700,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildBranding(Color primaryColor) {
-    return Padding(
-      padding: const EdgeInsets.only(top: 32, bottom: 16),
-      child: Opacity(
-        opacity: 0.2,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Transform.rotate(
-              angle: 45 * math.pi / 180,
-              child: Container(
-                width: 24,
-                height: 24,
-                decoration: BoxDecoration(
-                  color: primaryColor,
-                  borderRadius: BorderRadius.circular(4),
-                ),
-              ),
-            ),
-            const SizedBox(width: 12),
-            Text(
-              '不干了',
-              style: TextStyle(
-                color: primaryColor,
-                fontSize: 18,
-                fontWeight: FontWeight.w800,
-                letterSpacing: -0.5,
+                fontFamily: 'NotoSerifSC',
               ),
             ),
           ],

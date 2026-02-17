@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'dart:async';
-import 'dart:math' as math;
+import 'dart:typed_data';
 import 'dart:ui' as ui;
 import 'package:flutter/rendering.dart';
 import 'base_page.dart';
 import '../cache/cache_manager.dart';
 import '../models/user_data.dart';
+import '../services/quote_service.dart';
+import 'package:image_gallery_saver/image_gallery_saver.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class ShareCardPageController extends StatefulWidget {
   const ShareCardPageController({super.key});
@@ -21,6 +24,9 @@ class _ShareCardPageControllerState extends State<ShareCardPageController>
   final GlobalKey _cardKey = GlobalKey();
   UserData _userData = UserData();
   bool _isSaving = false;
+  late String _resultTopText;
+  late String _resultBottomText;
+  late QuoteService _quoteService;
 
   @override
   String get pageTitle => '分享卡片预览';
@@ -32,6 +38,12 @@ class _ShareCardPageControllerState extends State<ShareCardPageController>
   void loadData() async {
     setLoading(true);
     try {
+      _quoteService = await QuoteService.getInstance();
+      setState(() {
+        _resultTopText = _quoteService.resultTopText;
+        _resultBottomText = _quoteService.resultBottomText;
+      });
+
       final cacheManager = await CacheManager.getInstance();
       final jsonString = await cacheManager.getString(CacheKeys.userData);
 
@@ -52,23 +64,76 @@ class _ShareCardPageControllerState extends State<ShareCardPageController>
     });
 
     try {
-      await Future.delayed(const Duration(milliseconds: 500));
+      final RenderRepaintBoundary? repaintBoundary = _cardKey.currentContext?.findRenderObject() as RenderRepaintBoundary?;
+      
+      if (repaintBoundary == null) {
+        throw Exception('无法获取卡片渲染对象');
+      }
 
-      Get.snackbar(
-        '保存成功',
-        '卡片已保存到相册',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: const Color(0xFF4a3621),
-        colorText: Colors.white,
-        duration: const Duration(seconds: 2),
+      await Future.delayed(const Duration(milliseconds: 100));
+      
+      final image = await repaintBoundary.toImage(
+        pixelRatio: MediaQuery.of(context).devicePixelRatio,
       );
+      
+      final byteData = await image.toByteData(
+        format: ui.ImageByteFormat.png,
+      );
+      
+      if (byteData == null) {
+        throw Exception('图片转换失败');
+      }
+
+      final Uint8List imageBytes = byteData.buffer.asUint8List();
+      
+      final permissionStatus = await Permission.photos.request();
+        
+      if (permissionStatus.isGranted || permissionStatus.isLimited) {
+        final result = await ImageGallerySaver.saveImage(
+          imageBytes,
+          quality: 100,
+          name: 'share_card_${DateTime.now().millisecondsSinceEpoch}',
+        );
+          
+        if (result['isSuccess'] == true) {
+          Get.snackbar(
+            '保存成功',
+            '卡片已保存到相册',
+            snackPosition: SnackPosition.BOTTOM,
+            backgroundColor: const Color(0xFF4a3621),
+            colorText: Colors.white,
+            duration: const Duration(seconds: 2),
+          );
+        } else {
+          throw Exception('保存失败');
+        }
+      } else if (permissionStatus.isDenied) {
+        Get.snackbar(
+          '权限不足',
+          '请在设置中开启相册权限',
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Colors.orange,
+          colorText: Colors.white,
+          duration: const Duration(seconds: 2),
+        );
+      } else {
+        Get.snackbar(
+          '保存失败',
+          '无法保存到相册',
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Colors.red,
+          colorText: Colors.white,
+          duration: const Duration(seconds: 2),
+        );
+      }
     } catch (e) {
       Get.snackbar(
         '保存失败',
-        '请稍后重试',
+        '请稍后重试: $e',
         snackPosition: SnackPosition.BOTTOM,
         backgroundColor: Colors.red,
         colorText: Colors.white,
+        duration: const Duration(seconds: 2),
       );
     }
 
@@ -97,8 +162,6 @@ class _ShareCardPageControllerState extends State<ShareCardPageController>
                   children: [
                     const SizedBox(height: 24),
                     _buildCard(primaryColor, cardWarm, isDarkMode),
-                    const SizedBox(height: 24),
-                    _buildHelperText(primaryColor),
                     const SizedBox(height: 24),
                     _buildActionButtons(primaryColor, isDarkMode),
                   ],
@@ -155,6 +218,7 @@ class _ShareCardPageControllerState extends State<ShareCardPageController>
                 fontSize: 16,
                 fontWeight: FontWeight.w700,
                 height: 1.2,
+                fontFamily: 'NotoSerifSC',
               ),
             ),
           ),
@@ -214,16 +278,18 @@ class _ShareCardPageControllerState extends State<ShareCardPageController>
                           fontSize: 12,
                           fontWeight: FontWeight.w600,
                           letterSpacing: 3,
+                          fontFamily: 'NotoSerifSC',
                         ),
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        '今天，我还是没走',
+                        _resultTopText,
                         style: TextStyle(
                           color: const Color(0xFF161413),
                           fontSize: 22,
                           fontWeight: FontWeight.w700,
                           height: 1.2,
+                          fontFamily: 'NotoSerifSC',
                         ),
                       ),
                     ],
@@ -266,6 +332,7 @@ class _ShareCardPageControllerState extends State<ShareCardPageController>
                   color: primaryColor.withValues(alpha: 0.7),
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
+                  fontFamily: 'NotoSerifSC',
                 ),
               ),
               const SizedBox(height: 8),
@@ -280,7 +347,7 @@ class _ShareCardPageControllerState extends State<ShareCardPageController>
                       color: primaryColor,
                       fontSize: 72,
                       fontWeight: FontWeight.w900,
-                      letterSpacing: -2,
+                      fontFamily: 'NotoSerifSC',
                     ),
                   ),
                   Padding(
@@ -291,6 +358,7 @@ class _ShareCardPageControllerState extends State<ShareCardPageController>
                         color: primaryColor.withValues(alpha: 0.8),
                         fontSize: 20,
                         fontWeight: FontWeight.w700,
+                        fontFamily: 'NotoSerifSC',
                       ),
                     ),
                   ),
@@ -304,52 +372,56 @@ class _ShareCardPageControllerState extends State<ShareCardPageController>
   }
 
   Widget _buildBadgeSection(Color primaryColor) {
-    return Column(
-      children: [
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-          decoration: BoxDecoration(
-            color: primaryColor.withValues(alpha: 0.08),
-            borderRadius: BorderRadius.circular(20),
-            border: Border.all(
-              color: primaryColor.withValues(alpha: 0.1),
-            ),
-          ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(
-                Icons.workspace_premium,
-                color: primaryColor,
-                size: 18,
+    return Center(
+      child: Column(
+        children: [
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+            decoration: BoxDecoration(
+              color: primaryColor.withValues(alpha: 0.08),
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(
+                color: primaryColor.withValues(alpha: 0.1),
               ),
-              const SizedBox(width: 6),
-              Text(
-                '🙃 明年再说型选手',
-                style: TextStyle(
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(
+                  Icons.workspace_premium,
                   color: primaryColor,
-                  fontSize: 14,
-                  fontWeight: FontWeight.w700,
+                  size: 18,
                 ),
-              ),
-            ],
-          ),
-        ),
-        const SizedBox(height: 16),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20),
-          child: Text(
-            '"人人都在上班，但不是每个人都甘心。"',
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              color: primaryColor.withValues(alpha: 0.5),
-              fontSize: 13,
-              fontStyle: FontStyle.italic,
-              fontWeight: FontWeight.w600,
+                const SizedBox(width: 6),
+                Text(
+                  '🙃 明年再说型选手',
+                  style: TextStyle(
+                    color: primaryColor,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w700,
+                    fontFamily: 'NotoSerifSC',
+                  ),
+                ),
+              ],
             ),
           ),
-        ),
-      ],
+          const SizedBox(height: 16),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            child: Text(
+              '"$_resultBottomText"',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: primaryColor.withValues(alpha: 0.5),
+                fontSize: 13,
+                fontStyle: FontStyle.italic,
+                fontFamily: 'NotoSerifSC',
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -376,6 +448,7 @@ class _ShareCardPageControllerState extends State<ShareCardPageController>
                       fontSize: 10,
                       fontWeight: FontWeight.w700,
                       letterSpacing: 2,
+                      fontFamily: 'NotoSerifSC',
                     ),
                   ),
                   Text(
@@ -384,7 +457,7 @@ class _ShareCardPageControllerState extends State<ShareCardPageController>
                       color: primaryColor,
                       fontSize: 20,
                       fontWeight: FontWeight.w900,
-                      letterSpacing: -0.5,
+                      fontFamily: 'NotoSerifSC',
                     ),
                   ),
                 ],
@@ -406,6 +479,7 @@ class _ShareCardPageControllerState extends State<ShareCardPageController>
                           color: primaryColor.withValues(alpha: 0.6),
                           fontSize: 12,
                           fontWeight: FontWeight.w600,
+                          fontFamily: 'NotoSerifSC',
                         ),
                       ),
                     ],
@@ -432,28 +506,6 @@ class _ShareCardPageControllerState extends State<ShareCardPageController>
                 ],
               ),
             ],
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildHelperText(Color primaryColor) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Icon(
-          Icons.info_outline,
-          color: primaryColor.withValues(alpha: 0.4),
-          size: 16,
-        ),
-        const SizedBox(width: 6),
-        Text(
-          '长按图片或点击下方按钮保存',
-          style: TextStyle(
-            color: primaryColor.withValues(alpha: 0.4),
-            fontSize: 12,
-            fontWeight: FontWeight.w600,
           ),
         ),
       ],

@@ -4,7 +4,6 @@ import 'package:get/get.dart';
 import 'base_page.dart';
 import '../services/user_data_service.dart';
 import 'dart:async';
-import 'dart:math' as math;
 
 class HomePageController extends StatefulWidget {
   const HomePageController({super.key});
@@ -19,12 +18,16 @@ class _HomePageControllerState extends State<HomePageController>
   late Animation<double> _steamAnimation;
   late Animation<double> _cupScaleAnimation;
   bool _showButton = false;
+  bool _isPressed = false;
   int _tapCount = 0;
   String _selectedCity = '';
   String _selectedIndustry = '';
-
+  late UserDataService _userDataService;
+  String _homePageTitle = QuoteUtils.getRandomQuote(QuoteType.homePage);
+  @override
   String get pageTitle => '';
 
+  @override
   bool get showAppBar => false;
 
   @override
@@ -65,6 +68,12 @@ class _HomePageControllerState extends State<HomePageController>
   @override
   void loadData() async {
     setLoading(true);
+    _userDataService = await UserDataService.getInstance();
+    final userData = await _userDataService.getUserData();
+    setState(() {
+      _selectedCity = userData.city;
+      _selectedIndustry = userData.industry;
+    });
     await Future.delayed(const Duration(milliseconds: 500));
     setLoading(false);
   }
@@ -86,122 +95,20 @@ class _HomePageControllerState extends State<HomePageController>
     }
   }
 
-  void _showCityPicker() {
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: Colors.transparent,
-      builder: (context) => _buildSelectionSheet(
-        title: '选择城市',
-        items: QuoteUtils.cities,
-        selectedValue: _selectedCity,
-        onSelect: (value) {
-          setState(() {
-            _selectedCity = value;
-          });
-          Navigator.of(context).pop();
-        },
-      ),
-    );
+  void _onCityChanged(String? value) {
+    if (value == null) return;
+    setState(() {
+      _selectedCity = value;
+    });
+    _userDataService.setCity(value);
   }
 
-  void _showIndustryPicker() {
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: Colors.transparent,
-      builder: (context) => _buildSelectionSheet(
-        title: '选择行业',
-        items: QuoteUtils.industries,
-        selectedValue: _selectedIndustry,
-        onSelect: (value) {
-          setState(() {
-            _selectedIndustry = value;
-          });
-          Navigator.of(context).pop();
-        },
-      ),
-    );
-  }
-
-  Widget _buildSelectionSheet({
-    required String title,
-    required List<String> items,
-    required String selectedValue,
-    required Function(String) onSelect,
-  }) {
-    final primaryColor = const Color(0xFF4a3621);
-    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
-
-    return Container(
-      decoration: BoxDecoration(
-        color: isDarkMode ? const Color(0xFF1d1915) : Colors.white,
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Container(
-            width: 40,
-            height: 4,
-            margin: const EdgeInsets.symmetric(vertical: 12),
-            decoration: BoxDecoration(
-              color: primaryColor.withValues(alpha: 0.3),
-              borderRadius: BorderRadius.circular(2),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(20),
-            child: Text(
-              title,
-              style: TextStyle(
-                color: primaryColor,
-                fontSize: 18,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ),
-          Flexible(
-            child: SingleChildScrollView(
-              child: Wrap(
-                spacing: 12,
-                runSpacing: 12,
-                children: items.map((item) {
-                  final isSelected = item == selectedValue;
-                  return GestureDetector(
-                    onTap: () => onSelect(item),
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 20,
-                        vertical: 12,
-                      ),
-                      decoration: BoxDecoration(
-                        color: isSelected
-                            ? primaryColor
-                            : primaryColor.withValues(alpha: 0.08),
-                        borderRadius: BorderRadius.circular(8),
-                        border: Border.all(
-                          color: isSelected
-                              ? primaryColor
-                              : primaryColor.withValues(alpha: 0.2),
-                        ),
-                      ),
-                      child: Text(
-                        item,
-                        style: TextStyle(
-                          color: isSelected ? Colors.white : primaryColor,
-                          fontSize: 14,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ),
-                  );
-                }).toList(),
-              ),
-            ),
-          ),
-          const SizedBox(height: 20),
-        ],
-      ),
-    );
+  void _onIndustryChanged(String? value) {
+    if (value == null) return;
+    setState(() {
+      _selectedIndustry = value;
+    });
+    _userDataService.setIndustry(value);
   }
 
   @override
@@ -297,7 +204,7 @@ class _HomePageControllerState extends State<HomePageController>
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 32),
           child: Text(
-            QuoteUtils.getRandomQuote(QuoteType.homePage),
+            _homePageTitle,
             textAlign: TextAlign.center,
             style: TextStyle(
               color: primaryColor.withValues(alpha: 0.6),
@@ -314,82 +221,33 @@ class _HomePageControllerState extends State<HomePageController>
 
   Widget _buildCoffeeCupArea(Color primaryColor, bool isDarkMode) {
     return GestureDetector(
+      onTapDown: (_) => setState(() => _isPressed = true),
+      onTapUp: (_) => setState(() => _isPressed = false),
+      onTapCancel: () => setState(() => _isPressed = false),
       onTap: _handleTap,
       child: Column(
         children: [
-          AnimatedBuilder(
-            animation: _coffeeController,
-            builder: (context, child) {
-              return Transform.scale(
-                scale: _cupScaleAnimation.value,
-                child: child,
-              );
-            },
-            child: Column(
-              children: [
-                AnimatedBuilder(
-                  animation: _steamAnimation,
-                  builder: (context, child) {
-                    return Opacity(
-                      opacity: _steamAnimation.value,
-                      child: Transform.translate(
-                        offset: Offset(0, -_steamAnimation.value * 20),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Transform(
-                              transform: Matrix4.identity()
-                                ..scale(-1.0, 1.0, 1.0),
-                              child: Icon(
-                                Icons.air,
-                                color: primaryColor,
-                                size: 24,
-                              ),
-                            ),
-                            const SizedBox(width: 8),
-                            Icon(
-                              Icons.air,
-                              color: primaryColor,
-                              size: 24,
-                            ),
-                          ],
-                        ),
-                      ),
-                    );
-                  },
-                ),
-                const SizedBox(height: 16),
-                AnimatedBuilder(
-                  animation: _coffeeController,
-                  builder: (context, child) {
-                    return Transform.scale(
-                      scale: 1.0 + (_coffeeController.value * 0.125),
-                      child: child,
-                    );
-                  },
-                  child: Container(
-                    width: 180,
-                    height: 180,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: primaryColor.withValues(
-                          alpha: isDarkMode ? 0.1 : 0.05),
-                    ),
-                    child: Center(
-                      child: CustomPaint(
-                        size: const Size(140, 140),
-                        painter: CoffeeCupPainter(primaryColor: primaryColor),
-                      ),
-                    ),
+          AnimatedSwitcher(
+            duration: const Duration(milliseconds: 150),
+            child: _isPressed
+                ? Image.asset(
+                    'assets/images/dark2.png',
+                    key: const ValueKey('pressed'),
+                    width: 260,
+                    height: 260,
+                  )
+                : Image.asset(
+                    'assets/images/dark1.png',
+                    key: const ValueKey('normal'),
+                    width: 260,
+                    height: 260,
                   ),
-                ),
-              ],
-            ),
           ),
           if (_showButton) ...[
             const SizedBox(height: 24),
-            SizedBox(
+            Container(
               width: double.infinity,
+              padding: const EdgeInsets.symmetric(horizontal: 48),
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
                   backgroundColor: primaryColor,
@@ -404,8 +262,8 @@ class _HomePageControllerState extends State<HomePageController>
                   final userDataService = await UserDataService.getInstance();
                   await userDataService.updateUserData(
                     days: 128,
-                    city: '上海',
-                    industry: '产品经理',
+                    city: _selectedCity,
+                    industry: _selectedIndustry,
                   );
                   Get.toNamed('/result');
                 },
@@ -449,22 +307,48 @@ class _HomePageControllerState extends State<HomePageController>
       child: Row(
         children: [
           Expanded(
-            child: _buildSelector(
+            child: _buildDropdownSelector(
               primaryColor: primaryColor,
-              label: _selectedCity.isEmpty ? '你在哪个城市' : _selectedCity,
-              icon: Icons.expand_more,
+              hint: '你在哪个城市',
+              value: _selectedCity.isEmpty ? null : _selectedCity,
+              items: QuoteUtils.cities.map((city) {
+                return DropdownMenuItem(
+                  value: city,
+                  child: Text(
+                    city,
+                    style: TextStyle(
+                      color: primaryColor,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                );
+              }).toList(),
+              onChanged: _onCityChanged,
               isDarkMode: isDarkMode,
-              onTap: _showCityPicker,
             ),
           ),
           const SizedBox(width: 16),
           Expanded(
-            child: _buildSelector(
+            child: _buildDropdownSelector(
               primaryColor: primaryColor,
-              label: _selectedIndustry.isEmpty ? '你做什么行业' : _selectedIndustry,
-              icon: Icons.expand_more,
+              hint: '你做什么行业',
+              value: _selectedIndustry.isEmpty ? null : _selectedIndustry,
+              items: QuoteUtils.industries.map((industry) {
+                return DropdownMenuItem(
+                  value: industry,
+                  child: Text(
+                    industry,
+                    style: TextStyle(
+                      color: primaryColor,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                );
+              }).toList(),
+              onChanged: _onIndustryChanged,
               isDarkMode: isDarkMode,
-              onTap: _showIndustryPicker,
             ),
           ),
         ],
@@ -472,12 +356,13 @@ class _HomePageControllerState extends State<HomePageController>
     );
   }
 
-  Widget _buildSelector({
+  Widget _buildDropdownSelector({
     required Color primaryColor,
-    required String label,
-    required IconData icon,
+    required String hint,
+    required String? value,
+    required List<DropdownMenuItem<String>> items,
+    required void Function(String?) onChanged,
     required bool isDarkMode,
-    required VoidCallback onTap,
   }) {
     return Container(
       decoration: BoxDecoration(
@@ -494,86 +379,38 @@ class _HomePageControllerState extends State<HomePageController>
           ),
         ],
       ),
-      child: InkWell(
-        borderRadius: BorderRadius.circular(8),
-        onTap: onTap,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-          child: Row(
-            children: [
-              Expanded(
-                child: Text(
-                  label,
-                  style: TextStyle(
-                    color: primaryColor.withValues(alpha: 0.8),
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ),
-              Icon(
-                icon,
-                color: primaryColor.withValues(alpha: 0.4),
-                size: 20,
-              ),
-            ],
+      child: DropdownButtonFormField<String>(
+        value: value,
+        hint: Text(
+          hint,
+          style: TextStyle(
+            color: primaryColor.withValues(alpha: 0.5),
+            fontSize: 14,
+            fontWeight: FontWeight.w500,
           ),
+        ),
+        items: items,
+        onChanged: onChanged,
+        icon: Padding(
+          padding: const EdgeInsets.only(right: 8),
+          child: Icon(
+            Icons.expand_more,
+            color: primaryColor.withValues(alpha: 0.4),
+            size: 20,
+          ),
+        ),
+        decoration: const InputDecoration(
+          contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          border: InputBorder.none,
+          isDense: true,
+        ),
+        dropdownColor: isDarkMode ? const Color(0xFF1d1915) : Colors.white,
+        style: TextStyle(
+          color: primaryColor.withValues(alpha: 0.8),
+          fontSize: 14,
+          fontWeight: FontWeight.w600,
         ),
       ),
     );
   }
-}
-
-class CoffeeCupPainter extends CustomPainter {
-  final Color primaryColor;
-
-  CoffeeCupPainter({required this.primaryColor});
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final paint = Paint()
-      ..color = primaryColor
-      ..strokeWidth = 6
-      ..style = PaintingStyle.stroke
-      ..strokeCap = StrokeCap.round
-      ..strokeJoin = StrokeJoin.round;
-
-    final path = Path();
-
-    final cupTopLeft = Offset(size.width * 0.25, size.height * 0.31);
-    final cupTopRight = Offset(size.width * 0.69, size.height * 0.31);
-    final cupBottomRight = Offset(size.width * 0.69, size.height * 0.56);
-    final cupBottomLeft = Offset(size.width * 0.31, size.height * 0.56);
-
-    path.moveTo(cupTopLeft.dx, cupTopLeft.dy);
-    path.lineTo(cupBottomLeft.dx, cupBottomLeft.dy);
-    path.quadraticBezierTo(
-      cupBottomLeft.dx - 5,
-      cupBottomLeft.dy + 20,
-      cupBottomLeft.dx + 10,
-      cupBottomLeft.dy + 35,
-    );
-    path.lineTo(cupBottomRight.dx - 10, cupBottomRight.dy + 35);
-    path.quadraticBezierTo(
-      cupBottomRight.dx + 5,
-      cupBottomRight.dy + 20,
-      cupBottomRight.dx,
-      cupBottomRight.dy,
-    );
-    path.lineTo(cupTopRight.dx, cupTopRight.dy);
-
-    path.moveTo(cupTopLeft.dx, cupTopLeft.dy);
-    path.lineTo(cupTopRight.dx, cupTopRight.dy);
-    path.moveTo(cupTopLeft.dx + 5, cupTopLeft.dy - 10);
-    path.lineTo(cupTopLeft.dx + 5, cupTopLeft.dy - 20);
-    path.moveTo(size.width * 0.44, cupTopLeft.dy - 10);
-    path.lineTo(size.width * 0.44, cupTopLeft.dy - 20);
-    path.moveTo(size.width * 0.69 - 5, cupTopLeft.dy - 10);
-    path.lineTo(size.width * 0.69 - 5, cupTopLeft.dy - 20);
-
-    canvas.drawPath(path, paint);
-  }
-
-  @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }

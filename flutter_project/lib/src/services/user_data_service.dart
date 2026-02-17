@@ -38,7 +38,7 @@ class UserDataService {
 
   Future<int> getDays() async {
     final data = await getUserData();
-    return data.days;
+    return 30;
   }
 
   Future<void> setDays(int days) async {
