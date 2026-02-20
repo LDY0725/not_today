@@ -64,37 +64,38 @@ class _ShareCardPageControllerState extends State<ShareCardPageController>
     });
 
     try {
-      final RenderRepaintBoundary? repaintBoundary = _cardKey.currentContext?.findRenderObject() as RenderRepaintBoundary?;
-      
+      final RenderRepaintBoundary? repaintBoundary =
+          _cardKey.currentContext?.findRenderObject() as RenderRepaintBoundary?;
+
       if (repaintBoundary == null) {
         throw Exception('无法获取卡片渲染对象');
       }
 
       await Future.delayed(const Duration(milliseconds: 100));
-      
+
       final image = await repaintBoundary.toImage(
         pixelRatio: MediaQuery.of(context).devicePixelRatio,
       );
-      
+
       final byteData = await image.toByteData(
         format: ui.ImageByteFormat.png,
       );
-      
+
       if (byteData == null) {
         throw Exception('图片转换失败');
       }
 
       final Uint8List imageBytes = byteData.buffer.asUint8List();
-      
+
       final permissionStatus = await Permission.photos.request();
-        
+
       if (permissionStatus.isGranted || permissionStatus.isLimited) {
         final result = await ImageGallerySaver.saveImage(
           imageBytes,
           quality: 100,
           name: 'share_card_${DateTime.now().millisecondsSinceEpoch}',
         );
-          
+
         if (result['isSuccess'] == true) {
           Get.snackbar(
             '保存成功',
@@ -135,6 +136,7 @@ class _ShareCardPageControllerState extends State<ShareCardPageController>
         colorText: Colors.white,
         duration: const Duration(seconds: 2),
       );
+      print(e);
     }
 
     setState(() {
