@@ -84,8 +84,8 @@ class _HomePageControllerState extends State<HomePageController>
         lastUpdated.year == now.year &&
         lastUpdated.month == now.month &&
         lastUpdated.day == now.day) {
-      Get.offAllNamed('/result');
-      return;
+      // Get.offAllNamed('/result');
+      // return;
     }
 
     await Future.delayed(const Duration(milliseconds: 500));
