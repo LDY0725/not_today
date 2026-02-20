@@ -1,9 +1,9 @@
 package handlers
 
 import (
-	"encoding/json"
 	"log"
 	"net/http"
+	"strings"
 	"sync"
 	"time"
 
@@ -20,6 +20,24 @@ type StatsCache struct {
 }
 
 var statsCache = &StatsCache{}
+var dbInstance *database.DB
+
+func InitDB() {
+	if dbInstance == nil {
+		var err error
+		dbInstance, err = database.InitDB()
+		if err != nil {
+			log.Printf("Failed to init DB: %v", err)
+		}
+	}
+}
+
+func GetDB() *database.DB {
+	if dbInstance == nil {
+		InitDB()
+	}
+	return dbInstance
+}
 
 func GetIndustryStats() []models.IndustryData {
 	statsCache.mu.RLock()
@@ -32,9 +50,8 @@ func GetIndustryStats() []models.IndustryData {
 }
 
 func CalculateAndCacheStats() {
-	db, err := database.InitDB()
-	if err != nil {
-		log.Printf("Failed to init DB: %v", err)
+	db := GetDB()
+	if db == nil {
 		return
 	}
 
@@ -86,9 +103,9 @@ func CheckIn(c *gin.Context) {
 		return
 	}
 
-	db, err := database.InitDB()
-	if err != nil {
-		log.Printf("Failed to init DB: %v", err)
+	db := GetDB()
+	if db == nil {
+		log.Printf("Failed to init DB")
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Database error"})
 		return
 	}
@@ -102,7 +119,7 @@ func CheckIn(c *gin.Context) {
 
 	today := time.Now().Format("2006-01-02")
 	isNewCheckIn := false
-
+	checkedInDates := []string{}
 	if user == nil {
 		user, err = db.CreateUser(req.UserId, req.City, req.Industry)
 		if err != nil {
@@ -123,8 +140,7 @@ func CheckIn(c *gin.Context) {
 			updated = true
 		}
 
-		var checkedInDates []string
-		json.Unmarshal([]byte(user.CheckedInDates), &checkedInDates)
+		checkedInDates = strings.Split(user.CheckedInDates, ",")
 
 		alreadyCheckedIn := false
 		for _, date := range checkedInDates {
@@ -141,8 +157,7 @@ func CheckIn(c *gin.Context) {
 			updated = true
 			isNewCheckIn = true
 
-			checkedInDatesJSON, _ := json.Marshal(checkedInDates)
-			user.CheckedInDates = string(checkedInDatesJSON)
+			user.CheckedInDates = strings.Join(checkedInDates, ",")
 
 			if err := db.UpdateUser(user); err != nil {
 				log.Printf("Failed to update user: %v", err)
@@ -178,9 +193,6 @@ func CheckIn(c *gin.Context) {
 		industryStats = industryStats[:10]
 	}
 
-	var checkedInDates []string
-	json.Unmarshal([]byte(user.CheckedInDates), &checkedInDates)
-
 	response := models.UserResponse{
 		UserId:                  user.UserId,
 		Days:                    user.Days,
@@ -191,8 +203,7 @@ func CheckIn(c *gin.Context) {
 		IndustryResignationInfo: industryStats,
 		AppRankingPercentile:    rankingPercentile,
 	}
-
-	c.JSON(http.StatusOK, response)
+	c.JSON(http.StatusOK, gin.H{"data": response, "code": 200})
 }
 
 func HealthCheck(c *gin.Context) {

@@ -38,7 +38,11 @@ class _DetailReportPageState extends State<DetailReportPage> {
 
       setState(() {
         _totalDays = userData.days;
-        _industries = userData.industryResignationInfo.sublist(0, 5);
+        if (userData.industryResignationInfo.length > 5) {
+          _industries = userData.industryResignationInfo.sublist(0, 5);
+        } else {
+          _industries = userData.industryResignationInfo;
+        }
         _rankPercent = userData.appRankingPercentile;
         _streakPercent = _calculateStreakPercent(userData.days);
         _year = DateTime.now().year.toString();

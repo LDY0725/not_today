@@ -273,13 +273,14 @@ class UserDataService {
 
   Future<bool> syncCheckin() async {
     try {
+      print(111);
       final data = await getUserData();
       final response = await ApiClient.instance.checkin(
         userId: data.userId,
         city: data.city,
         industry: data.industry,
       );
-
+      print(response);
       final checkinResponse = api.CheckinResponse.fromJson(response);
 
       data.userId = checkinResponse.userId;

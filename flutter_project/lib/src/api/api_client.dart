@@ -129,6 +129,7 @@ class ApiClient {
       );
       return response.data;
     } on DioException catch (e) {
+      print(e);
       throw ApiException.fromDioError(e.error);
     }
   }
