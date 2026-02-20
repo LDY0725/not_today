@@ -54,6 +54,8 @@ class _ShareCardPageControllerState extends State<ShareCardPageController>
           _userData = UserData.fromJsonString(jsonString);
         });
       }
+
+      await Permission.photos.request();
     } catch (e) {
       setError('加载数据失败: $e');
     }

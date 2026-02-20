@@ -30,6 +30,11 @@
 	<string>我们需要访问您的相册来保存分享卡片</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>我们需要访问您的相册来保存分享卡片</string>
+	<key>NSAppTransportSecurity</key>
+	<dict>
+		<key>NSAllowsArbitraryLoads</key>
+		<true/>
+	</dict>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>
