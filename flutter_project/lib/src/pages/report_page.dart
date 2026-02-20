@@ -16,7 +16,7 @@ class _ReportPageControllerState extends State<ReportPageController>
     with BasePageController {
   int _totalDays = 0;
   int _currentStreak = 0;
-  int _rankPercentile = 88;
+  double _rankPercentile = 0;
   String _year = '2026';
 
   @override
@@ -31,19 +31,26 @@ class _ReportPageControllerState extends State<ReportPageController>
     try {
       final cacheManager = await CacheManager.getInstance();
       final jsonString = await cacheManager.getString(CacheKeys.userData);
+      print(jsonString);
 
       if (jsonString != null) {
         try {
           final userData = jsonDecode(jsonString);
           _totalDays = userData['days'] ?? 285;
           _currentStreak = userData['days'] ?? _currentStreak;
+          _rankPercentile = userData['appRankingPercentile'] ?? _rankPercentile;
+          print("11_rankPercentile");
+          print(_rankPercentile);
         } catch (e) {
-          _totalDays = 285;
-          _currentStreak = 128;
+          print(e);
+          _totalDays = 0;
+          _currentStreak = 0;
+          _rankPercentile = 0;
         }
       } else {
-        _totalDays = 285;
-        _currentStreak = 128;
+        _totalDays = 0;
+        _currentStreak = 0;
+        _rankPercentile = 0;
       }
 
       setState(() {});
@@ -271,6 +278,8 @@ class _ReportPageControllerState extends State<ReportPageController>
   }
 
   Widget _buildRankingSection(Color primaryColor, bool isDarkMode) {
+    print("_rankPercentile");
+    print(_rankPercentile);
     return Column(
       children: [
         Row(

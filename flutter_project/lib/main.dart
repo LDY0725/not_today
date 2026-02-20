@@ -56,7 +56,7 @@ class MyApp extends StatelessWidget {
         ),
         GetPage(
           name: '/detail_report',
-          page: () => const DetailReportPageController(),
+          page: () => const DetailReportPage(),
         ),
         GetPage(
           name: '/payment',

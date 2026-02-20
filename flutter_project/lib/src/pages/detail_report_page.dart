@@ -1,61 +1,56 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'dart:convert';
-import 'dart:math' as math;
-import '../cache/cache_manager.dart';
+import '../services/user_data_service.dart';
 import '../models/user_data.dart';
 
-class DetailReportPageController extends StatefulWidget {
-  const DetailReportPageController({super.key});
+class DetailReportPage extends StatefulWidget {
+  const DetailReportPage({super.key});
 
   @override
-  State<DetailReportPageController> createState() =>
-      _DetailReportPageControllerState();
+  State<DetailReportPage> createState() => _DetailReportPageState();
 }
 
-class _DetailReportPageControllerState
-    extends State<DetailReportPageController> {
+class _DetailReportPageState extends State<DetailReportPage> {
   int _totalDays = 0;
   int _streakPercent = 35;
-  int _rankPercent = 82;
+  double _rankPercent = 82;
   String _year = '2026';
 
-  final List<Map<String, dynamic>> _industries = [
-    {'name': '互联网/电子通信', 'percent': 28},
-    {'name': '金融/银行/保险', 'percent': 19},
-    {'name': '教育/培训/科研', 'percent': 15},
-    {'name': '房地产/建筑工程', 'percent': 12},
-    {'name': '生产/制造/机械', 'percent': 10},
-  ];
+  List<IndustryResignationData> _industries = [];
 
   @override
   void initState() {
     super.initState();
-    _loadData();
+    loadData();
   }
 
-  Future<void> _loadData() async {
+  void loadData() async {
     try {
-      final cacheManager = await CacheManager.getInstance();
-      final jsonString = await cacheManager.getString(CacheKeys.userData);
+      final userDataService = await UserDataService.getInstance();
+      final userData = await userDataService.getUserData();
 
-      if (jsonString != null) {
-        try {
-          final userData = jsonDecode(jsonString);
-          _totalDays = userData['days'] ?? 128;
-        } catch (e) {
-          _totalDays = 128;
-        }
-      } else {
-        _totalDays = 128;
-      }
+      if (!mounted) return;
 
-      if (mounted) {
-        setState(() {});
-      }
+      setState(() {
+        _totalDays = userData.days;
+        _industries = userData.industryResignationInfo.sublist(0, 5);
+        _rankPercent = userData.appRankingPercentile;
+        _streakPercent = _calculateStreakPercent(userData.days);
+        _year = DateTime.now().year.toString();
+      });
     } catch (e) {
       debugPrint('加载数据失败: $e');
     }
+  }
+
+  int _calculateStreakPercent(int days) {
+    if (days <= 0) return 10;
+    if (days <= 7) return 20;
+    if (days <= 30) return 35;
+    if (days <= 90) return 50;
+    if (days <= 180) return 65;
+    if (days <= 365) return 80;
+    return 95;
   }
 
   @override
@@ -64,8 +59,6 @@ class _DetailReportPageControllerState
     final primaryColor = const Color(0xFF4a3621);
     final backgroundLight = const Color(0xFFf9f8f3);
     final backgroundDark = const Color(0xFF1d1915);
-
-    _year = DateTime.now().year.toString();
 
     return Scaffold(
       backgroundColor: isDarkMode ? backgroundDark : backgroundLight,
@@ -277,6 +270,8 @@ class _DetailReportPageControllerState
         children: [
           const SizedBox(height: 8),
           ..._industries.map((industry) {
+            final displayPercent =
+                (industry.resignationPercentage / 100).clamp(0.0, 1.0);
             return Padding(
               padding: const EdgeInsets.only(bottom: 12),
               child: Column(
@@ -287,7 +282,7 @@ class _DetailReportPageControllerState
                     children: [
                       Expanded(
                         child: Text(
-                          industry['name'] as String,
+                          industry.industryName,
                           style: TextStyle(
                             color: isDarkMode
                                 ? Colors.white.withValues(alpha: 0.8)
@@ -299,7 +294,7 @@ class _DetailReportPageControllerState
                         ),
                       ),
                       Text(
-                        '${industry['percent']}%',
+                        '${industry.resignationPercentage.toStringAsFixed(1)}%',
                         style: TextStyle(
                           color: isDarkMode
                               ? Colors.white.withValues(alpha: 0.5)
@@ -312,8 +307,7 @@ class _DetailReportPageControllerState
                     ],
                   ),
                   const SizedBox(height: 6),
-                  _buildProgressBar(primaryColor,
-                      (industry['percent'] as int) / 30, isDarkMode,
+                  _buildProgressBar(primaryColor, displayPercent, isDarkMode,
                       barHeight: 4),
                 ],
               ),
