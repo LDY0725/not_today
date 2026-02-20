@@ -51,7 +51,18 @@ func CalculateAndCacheStats() {
 }
 
 func GetDefaultIndustryStats() []models.IndustryData {
-	return []models.IndustryData{}
+	return []models.IndustryData{
+		{IndustryName: "移动端开发", ResignationPercentage: 73.2},
+		{IndustryName: "市场", ResignationPercentage: 66.8},
+		{IndustryName: "设计师", ResignationPercentage: 66.7},
+		{IndustryName: "产品经理", ResignationPercentage: 66.3},
+		{IndustryName: "运营", ResignationPercentage: 66.2},
+		{IndustryName: "后端开发", ResignationPercentage: 61.9},
+		{IndustryName: "人事", ResignationPercentage: 60.4},
+		{IndustryName: "前端开发", ResignationPercentage: 60.1},
+		{IndustryName: "其他", ResignationPercentage: 52.3},
+		{IndustryName: "财务", ResignationPercentage: 45.1},
+	}
 }
 
 func init() {
@@ -101,18 +112,20 @@ func CheckIn(c *gin.Context) {
 		}
 		isNewCheckIn = true
 	} else {
+		updated := false
+
 		if user.City != req.City {
 			user.City = req.City
+			updated = true
 		}
 		if user.Industry != req.Industry {
 			user.Industry = req.Industry
+			updated = true
 		}
+
 		var checkedInDates []string
-		if err := json.Unmarshal([]byte(user.CheckedInDates), &checkedInDates); err != nil {
-			log.Printf("Failed to unmarshal checkedInDates: %v", err)
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "Database error"})
-			return
-		}
+		json.Unmarshal([]byte(user.CheckedInDates), &checkedInDates)
+
 		alreadyCheckedIn := false
 		for _, date := range checkedInDates {
 			if date == today {
@@ -122,18 +135,21 @@ func CheckIn(c *gin.Context) {
 		}
 
 		if !alreadyCheckedIn {
-			var checkedInDates []string
-			if err := json.Unmarshal([]byte(user.CheckedInDates), &checkedInDates); err != nil {
-				log.Printf("Failed to unmarshal checkedInDates: %v", err)
-				c.JSON(http.StatusInternalServerError, gin.H{"error": "Database error"})
-				return
-			}
 			checkedInDates = append(checkedInDates, today)
-			checkedInDatesJSON, _ := json.Marshal(checkedInDates)
-			user.CheckedInDates = string(checkedInDatesJSON)
 			user.Days++
 			user.LastUpdated = time.Now()
+			updated = true
 			isNewCheckIn = true
+
+			checkedInDatesJSON, _ := json.Marshal(checkedInDates)
+			user.CheckedInDates = string(checkedInDatesJSON)
+
+			if err := db.UpdateUser(user); err != nil {
+				log.Printf("Failed to update user: %v", err)
+				c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update user"})
+				return
+			}
+		} else if updated {
 			if err := db.UpdateUser(user); err != nil {
 				log.Printf("Failed to update user: %v", err)
 				c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update user"})
@@ -154,17 +170,17 @@ func CheckIn(c *gin.Context) {
 		CalculateAndCacheStats()
 	}
 	industryStats = GetIndustryStats()
+	if industryStats == nil {
+		industryStats = GetDefaultIndustryStats()
+	}
 
-	if len(industryStats) > 5 {
-		industryStats = industryStats[:5]
+	if len(industryStats) > 10 {
+		industryStats = industryStats[:10]
 	}
 
 	var checkedInDates []string
-	if err := json.Unmarshal([]byte(user.CheckedInDates), &checkedInDates); err != nil {
-		log.Printf("Failed to unmarshal checkedInDates: %v", err)
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Database error"})
-		return
-	}
+	json.Unmarshal([]byte(user.CheckedInDates), &checkedInDates)
+
 	response := models.UserResponse{
 		UserId:                  user.UserId,
 		Days:                    user.Days,

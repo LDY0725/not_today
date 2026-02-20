@@ -1,8 +1,10 @@
 import 'dart:async';
 import 'dart:math';
 import 'package:flutter/foundation.dart';
+import '../api/api_client.dart';
 import '../cache/cache_manager.dart';
 import '../models/user_data.dart';
+import '../models/checkin_response.dart' as api;
 import 'payment_service.dart';
 
 class UserDataService {
@@ -267,5 +269,39 @@ class UserDataService {
     final data = await getUserData();
     data.isPro = value;
     await saveUserData(data);
+  }
+
+  Future<bool> syncCheckin() async {
+    try {
+      final data = await getUserData();
+      final response = await ApiClient.instance.checkin(
+        userId: data.userId,
+        city: data.city,
+        industry: data.industry,
+      );
+
+      final checkinResponse = api.CheckinResponse.fromJson(response);
+
+      data.userId = checkinResponse.userId;
+      data.days = checkinResponse.days;
+      data.city = checkinResponse.city;
+      data.industry = checkinResponse.industry;
+      data.lastUpdated = checkinResponse.lastUpdated;
+      data.checkedInDates = checkinResponse.checkedInDates;
+      data.appRankingPercentile = checkinResponse.appRankingPercentile;
+
+      data.industryResignationInfo = checkinResponse.industryResignationInfo
+          .map((apiItem) => IndustryResignationData(
+                industryName: apiItem.industryName,
+                resignationPercentage: apiItem.resignationPercentage,
+              ))
+          .toList();
+
+      await saveUserData(data);
+      return true;
+    } catch (e) {
+      debugPrint('Sync checkin failed: $e');
+      return false;
+    }
   }
 }

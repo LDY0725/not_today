@@ -19,6 +19,7 @@ class _HomePageControllerState extends State<HomePageController>
   late Animation<double> _cupScaleAnimation;
   bool _showButton = false;
   bool _isPressed = false;
+  bool _isSubmitting = false;
   int _tapCount = 0;
   String _selectedCity = '';
   String _selectedIndustry = '';
@@ -274,17 +275,40 @@ class _HomePageControllerState extends State<HomePageController>
                       onPressed: () async {
                         final userDataService =
                             await UserDataService.getInstance();
-                        await userDataService.updateUserData(
-                          days: 128,
-                          city: _selectedCity,
-                          industry: _selectedIndustry,
-                        );
-                        Get.toNamed('/result');
+
+                        setState(() {
+                          _isSubmitting = true;
+                        });
+
+                        final success = await userDataService.syncCheckin();
+
+                        setState(() {
+                          _isSubmitting = false;
+                        });
+
+                        if (success) {
+                          Get.snackbar(
+                            '打卡成功',
+                            '恭喜你又坚持了一天！',
+                            snackPosition: SnackPosition.BOTTOM,
+                            backgroundColor: const Color(0xFF07C160),
+                            colorText: Colors.white,
+                          );
+                          Get.toNamed('/result');
+                        } else {
+                          Get.snackbar(
+                            '打卡失败',
+                            '请稍后重试',
+                            snackPosition: SnackPosition.BOTTOM,
+                            backgroundColor: Colors.red,
+                            colorText: Colors.white,
+                          );
+                        }
                       },
-                      child: const Text(
-                        '我不干了！',
+                      child: Text(
+                        _isSubmitting ? '打卡中...' : '我不干了！',
                         textAlign: TextAlign.center,
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.w900,
                         ),

@@ -15,7 +15,7 @@ class ApiClient {
   }
 
   static late final Dio _dio;
-  static const String _baseUrl = 'https://api.example.com';
+  static const String _baseUrl = 'http://192.168.0.115:8080';
 
   static final BaseOptions _options = BaseOptions(
     baseUrl: _baseUrl,
@@ -111,5 +111,25 @@ class ApiClient {
 
   void cancelRequests([CancelToken? cancelToken]) {
     cancelToken?.cancel('请求已取消');
+  }
+
+  Future<dynamic> checkin({
+    required String userId,
+    required String city,
+    required String industry,
+  }) async {
+    try {
+      final response = await _dio.post(
+        '/api/nottoday/checkin',
+        data: {
+          'userId': userId,
+          'city': city,
+          'industry': industry,
+        },
+      );
+      return response.data;
+    } on DioException catch (e) {
+      throw ApiException.fromDioError(e.error);
+    }
   }
 }

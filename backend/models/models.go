@@ -1,6 +1,8 @@
 package models
 
-import "time"
+import (
+	"time"
+)
 
 type CheckInRequest struct {
 	UserId   string `json:"userId"`
@@ -9,8 +11,8 @@ type CheckInRequest struct {
 }
 
 type IndustryData struct {
-	IndustryName          string `json:"industryName"`
-	ResignationPercentage int    `json:"resignationPercentage"`
+	IndustryName          string  `json:"industryName"`
+	ResignationPercentage float64 `json:"resignationPercentage"`
 }
 
 type UserResponse struct {
@@ -25,13 +27,13 @@ type UserResponse struct {
 }
 
 type User struct {
-	ID             int64     `db:"id"`
-	UserId         string    `db:"user_id"`
-	Days           int       `db:"days"`
-	City           string    `db:"city"`
-	Industry       string    `db:"industry"`
-	LastUpdated    time.Time `db:"last_updated"`
-	CheckedInDates string    `db:"checked_in_dates"` // JSON string
-	CreatedAt      time.Time `db:"created_at"`
-	UpdatedAt      time.Time `db:"updated_at"`
+	ID             uint      `gorm:"primaryKey" json:"-"`
+	UserId         string    `gorm:"uniqueIndex;size:64" json:"userId"`
+	Days           int       `gorm:"default:0" json:"days"`
+	City           string    `gorm:"size:100;default:''" json:"city"`
+	Industry       string    `gorm:"size:100;default:''" json:"industry"`
+	LastUpdated    time.Time `json:"lastUpdated"`
+	CheckedInDates string    `gorm:"type:text"` // JSON string
+	CreatedAt      time.Time `json:"createdAt"`
+	UpdatedAt      time.Time `json:"updatedAt"`
 }
