@@ -15,7 +15,7 @@ class ApiClient {
   }
 
   static late final Dio _dio;
-  static const String _baseUrl = 'http://192.168.0.115:8080';
+  static const String _baseUrl = 'http://38.47.239.243:8080';
 
   static final BaseOptions _options = BaseOptions(
     baseUrl: _baseUrl,

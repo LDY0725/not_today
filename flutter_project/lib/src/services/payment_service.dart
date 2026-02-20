@@ -118,6 +118,8 @@ class PaymentService {
 
     if (response.error != null) {
       print(response);
+      print(response.error);
+      print(response.error?.message);
       debugPrint('Product query error: ${response.error?.message}');
       return false;
     }
