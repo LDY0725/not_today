@@ -54,8 +54,6 @@ class _ShareCardPageControllerState extends State<ShareCardPageController>
           _userData = UserData.fromJsonString(jsonString);
         });
       }
-
-      await Permission.photos.request();
     } catch (e) {
       setError('加载数据失败: $e');
     }
@@ -443,9 +441,8 @@ class _ShareCardPageControllerState extends State<ShareCardPageController>
   }
 
   Widget _buildFooter(Color primaryColor) {
-    final city = _userData.city.isNotEmpty ? _userData.city : '上海';
-    final industry =
-        _userData.industry.isNotEmpty ? _userData.industry : '产品经理';
+    final city = _userData.city.isNotEmpty ? _userData.city : '';
+    final industry = _userData.industry.isNotEmpty ? _userData.industry : '';
 
     return Column(
       children: [
