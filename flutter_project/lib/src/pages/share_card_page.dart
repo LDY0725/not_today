@@ -8,10 +8,7 @@ import 'base_page.dart';
 import '../cache/cache_manager.dart';
 import '../models/user_data.dart';
 import '../services/quote_service.dart';
-import 'package:image_gallery_saver/image_gallery_saver.dart';
-import 'package:permission_handler/permission_handler.dart';
-import 'package:permission_handler/permission_handler.dart'
-    as permission_handler;
+import '../utils/image_saver.dart';
 
 class ShareCardPageController extends StatefulWidget {
   const ShareCardPageController({super.key});
@@ -65,95 +62,14 @@ class _ShareCardPageControllerState extends State<ShareCardPageController>
       _isSaving = true;
     });
 
-    try {
-      final RenderRepaintBoundary? repaintBoundary =
-          _cardKey.currentContext?.findRenderObject() as RenderRepaintBoundary?;
-
-      if (repaintBoundary == null) {
-        throw Exception('无法获取卡片渲染对象');
-      }
-
-      await Future.delayed(const Duration(milliseconds: 100));
-
-      final image = await repaintBoundary.toImage(
-        pixelRatio: MediaQuery.of(context).devicePixelRatio,
-      );
-
-      final byteData = await image.toByteData(
-        format: ui.ImageByteFormat.png,
-      );
-
-      if (byteData == null) {
-        throw Exception('图片转换失败');
-      }
-
-      final Uint8List imageBytes = byteData.buffer.asUint8List();
-
-      final permissionStatus = await Permission.photos.request();
-
-      if (permissionStatus.isGranted || permissionStatus.isLimited) {
-        final result = await ImageGallerySaver.saveImage(
-          imageBytes,
-          quality: 100,
-          name: 'share_card_${DateTime.now().millisecondsSinceEpoch}',
-        );
-
-        if (result['isSuccess'] == true) {
-          Get.snackbar(
-            '保存成功',
-            '卡片已保存到相册',
-            snackPosition: SnackPosition.BOTTOM,
-            backgroundColor: const Color(0xFF4a3621),
-            colorText: Colors.white,
-            duration: const Duration(seconds: 2),
-          );
-        } else {
-          throw Exception('保存失败');
-        }
-      } else if (permissionStatus.isDenied) {
-        Get.snackbar(
-          '权限不足',
-          '请在设置中开启相册权限',
-          snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: Colors.orange,
-          colorText: Colors.white,
-          duration: const Duration(seconds: 2),
-        );
-      } else if (permissionStatus.isPermanentlyDenied) {
-        Get.snackbar(
-          '权限被拒绝',
-          '请在设置中开启相册权限以保存图片',
-          snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: Colors.red,
-          colorText: Colors.white,
-          duration: const Duration(seconds: 3),
-        );
-        await Future.delayed(const Duration(seconds: 1));
-        permission_handler.openAppSettings();
-      } else {
-        Get.snackbar(
-          '保存失败',
-          '无法保存到相册',
-          snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: Colors.red,
-          colorText: Colors.white,
-          duration: const Duration(seconds: 2),
-        );
-      }
-    } catch (e) {
-      Get.snackbar(
-        '保存失败',
-        '请稍后重试: $e',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
-        duration: const Duration(seconds: 2),
-      );
-      print(e);
-    }
+    final success = await ImageSaver.saveWidgetToGallery(
+      repaintBoundaryKey: _cardKey,
+      context: context,
+      fileName: 'share_card',
+    );
 
     setState(() {
-      _isSaving = false;
+      _isSaving = !success;
     });
   }
 

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../services/user_data_service.dart';
 import '../models/user_data.dart';
+import '../utils/image_saver.dart';
 
 class ReportShareCardPageController extends StatefulWidget {
   const ReportShareCardPageController({super.key});
@@ -18,6 +19,8 @@ class _ReportShareCardPageControllerState
   String _city = '';
   String _industry = '';
   String _reason = '无效会议 + 午休被占';
+  bool _isSaving = false;
+  final GlobalKey _cardKey = GlobalKey();
 
   @override
   void initState() {
@@ -41,6 +44,22 @@ class _ReportShareCardPageControllerState
     } catch (e) {
       debugPrint('加载数据失败: $e');
     }
+  }
+
+  Future<void> _saveImage() async {
+    setState(() {
+      _isSaving = true;
+    });
+
+    final success = await ImageSaver.saveWidgetToGallery(
+      repaintBoundaryKey: _cardKey,
+      context: context,
+      fileName: 'report_card',
+    );
+
+    setState(() {
+      _isSaving = !success;
+    });
   }
 
   @override
@@ -121,143 +140,145 @@ class _ReportShareCardPageControllerState
     Color backgroundPaper,
     bool isDarkMode,
   ) {
-    return Container(
-      width: double.infinity,
-      decoration: BoxDecoration(
-        color: backgroundPaper,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: primaryColor.withValues(alpha: 0.1),
+    return RepaintBoundary(
+      key: _cardKey,
+      child: Container(
+        width: double.infinity,
+        decoration: BoxDecoration(
+          color: backgroundPaper,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(
+            color: primaryColor.withValues(alpha: 0.1),
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: primaryColor.withValues(alpha: 0.15),
+              blurRadius: 30,
+              offset: const Offset(0, 20),
+              spreadRadius: -10,
+            ),
+          ],
         ),
-        boxShadow: [
-          BoxShadow(
-            color: primaryColor.withValues(alpha: 0.15),
-            blurRadius: 30,
-            offset: const Offset(0, 20),
-            spreadRadius: -10,
-          ),
-        ],
-      ),
-      child: Column(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(24),
-            decoration: const BoxDecoration(
-              border: Border(
-                bottom: BorderSide(
-                  color: Color(0xFFe0dcd5),
-                ),
-              ),
-            ),
-            child: Column(
-              children: [
-                _buildGridBackground(),
-                const SizedBox(height: 32),
-                Container(
-                  width: 48,
-                  height: 2,
-                  decoration: BoxDecoration(
-                    color: primaryColor.withValues(alpha: 0.3),
+        child: Column(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(24),
+              decoration: const BoxDecoration(
+                border: Border(
+                  bottom: BorderSide(
+                    color: Color(0xFFe0dcd5),
                   ),
                 ),
-                const SizedBox(height: 32),
-                Text(
-                  '今天，我还在。\n${_rankPercent.toStringAsFixed(0)}% 忍耐报告',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    color: primaryColor,
-                    fontSize: 22,
-                    fontWeight: FontWeight.w700,
-                    fontFamily: 'NotoSerifSC',
-                    height: 1.3,
+              ),
+              child: Column(
+                children: [
+                  _buildGridBackground(),
+                  const SizedBox(height: 32),
+                  Container(
+                    width: 48,
+                    height: 2,
+                    decoration: BoxDecoration(
+                      color: primaryColor.withValues(alpha: 0.3),
+                    ),
                   ),
-                ),
-              ],
-            ),
-          ),
-          Container(
-            padding: const EdgeInsets.fromLTRB(24, 32, 24, 16),
-            child: Column(
-              children: [
-                _buildDataRow(
-                  primaryColor: primaryColor,
-                  label: '忍住没辞职',
-                  value: '$_totalDays',
-                  unit: '天',
-                ),
-                const SizedBox(height: 32),
-                _buildDataRow(
-                  primaryColor: primaryColor,
-                  label: '最想辞职原因',
-                  value: _reason,
-                  isText: true,
-                ),
-                const SizedBox(height: 32),
-                _buildDataRow(
-                  primaryColor: primaryColor,
-                  label: '击败了全国忍者',
-                  value: '$_rankPercent',
-                  unit: '%',
-                ),
-              ],
-            ),
-          ),
-          Container(
-            padding: const EdgeInsets.fromLTRB(24, 16, 24, 20),
-            decoration: BoxDecoration(
-              color: backgroundPaper.withValues(alpha: 0.5),
-              border: Border(
-                top: BorderSide(
-                  color: primaryColor.withValues(alpha: 0.05),
-                ),
+                  const SizedBox(height: 32),
+                  Text(
+                    '今天，我还在。\n${_rankPercent.toStringAsFixed(0)}% 忍耐报告',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      color: primaryColor,
+                      fontSize: 22,
+                      fontWeight: FontWeight.w700,
+                      fontFamily: 'NotoSerifSC',
+                      height: 1.3,
+                    ),
+                  ),
+                ],
               ),
             ),
-            child: Row(
-              children: [
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+            Container(
+              padding: const EdgeInsets.fromLTRB(24, 32, 24, 16),
+              child: Column(
+                children: [
+                  _buildDataRow(
+                    primaryColor: primaryColor,
+                    label: '忍住没辞职',
+                    value: '$_totalDays',
+                    unit: '天',
+                  ),
+                  const SizedBox(height: 32),
+                  _buildDataRow(
+                    primaryColor: primaryColor,
+                    label: '最想辞职原因',
+                    value: _reason,
+                    isText: true,
+                  ),
+                  const SizedBox(height: 32),
+                  _buildDataRow(
+                    primaryColor: primaryColor,
+                    label: '击败了全国忍者',
+                    value: '$_rankPercent',
+                    unit: '%',
+                  ),
+                ],
+              ),
+            ),
+            Container(
+              padding: const EdgeInsets.fromLTRB(24, 16, 24, 20),
+              decoration: BoxDecoration(
+                color: backgroundPaper.withValues(alpha: 0.5),
+                border: Border(
+                  top: BorderSide(
+                    color: primaryColor.withValues(alpha: 0.05),
+                  ),
+                ),
+              ),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          '$_city · $_industry',
+                          style: TextStyle(
+                            color: primaryColor.withValues(alpha: 0.6),
+                            fontSize: 12,
+                            fontWeight: FontWeight.w500,
+                            fontFamily: 'NotoSerifSC',
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Row(
                     children: [
+                      Container(
+                        width: 6,
+                        height: 6,
+                        decoration: BoxDecoration(
+                          color: primaryColor,
+                          shape: BoxShape.circle,
+                        ),
+                      ),
+                      const SizedBox(width: 6),
                       Text(
-                        '$_city · $_industry',
+                        '不干了 QUIT',
                         style: TextStyle(
-                          color: primaryColor.withValues(alpha: 0.6),
-                          fontSize: 12,
-                          fontWeight: FontWeight.w500,
+                          color: primaryColor,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w700,
+                          letterSpacing: -0.5,
                           fontFamily: 'NotoSerifSC',
                         ),
                       ),
                     ],
                   ),
-                ),
-                Row(
-                  children: [
-                    Container(
-                      width: 6,
-                      height: 6,
-                      decoration: BoxDecoration(
-                        color: primaryColor,
-                        shape: BoxShape.circle,
-                      ),
-                    ),
-                    const SizedBox(width: 6),
-                    Text(
-                      '不干了 QUIT',
-                      style: TextStyle(
-                        color: primaryColor,
-                        fontSize: 14,
-                        fontWeight: FontWeight.w700,
-                        // fontStyle: FontStyle.italic,
-                        letterSpacing: -0.5,
-                        fontFamily: 'NotoSerifSC',
-                      ),
-                    ),
-                  ],
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -305,7 +326,6 @@ class _ReportShareCardPageControllerState
                 color: primaryColor,
                 fontSize: 14,
                 fontWeight: FontWeight.w600,
-                // fontStyle: FontStyle.italic,
                 fontFamily: 'NotoSerifSC',
               ),
             ),
@@ -322,7 +342,6 @@ class _ReportShareCardPageControllerState
                   color: primaryColor,
                   fontSize: 48,
                   fontWeight: FontWeight.w900,
-                  // fontStyle: FontStyle.italic,
                   letterSpacing: -1,
                   fontFamily: 'NotoSerifSC',
                 ),
@@ -363,26 +382,18 @@ class _ReportShareCardPageControllerState
               elevation: 6,
               shadowColor: primaryColor.withValues(alpha: 0.3),
             ),
-            onPressed: () {
-              Get.snackbar(
-                '保存成功',
-                '卡片已保存到相册',
-                snackPosition: SnackPosition.BOTTOM,
-                backgroundColor: primaryColor,
-                colorText: Colors.white,
-              );
-            },
+            onPressed: _isSaving ? null : _saveImage,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Icon(
-                  Icons.download,
+                  _isSaving ? Icons.hourglass_empty : Icons.download,
                   size: 22,
                 ),
                 const SizedBox(width: 8),
-                const Text(
-                  '保存图片',
-                  style: TextStyle(
+                Text(
+                  _isSaving ? '保存中...' : '保存图片',
+                  style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w700,
                   ),
