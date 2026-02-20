@@ -3,6 +3,8 @@ import 'package:flutter_project/src/utils/quote_utils.dart';
 import 'package:get/get.dart';
 import 'base_page.dart';
 import '../services/user_data_service.dart';
+import '../utils/reason_utils.dart';
+import '../models/user_data.dart';
 import 'dart:async';
 
 class HomePageController extends StatefulWidget {
@@ -23,6 +25,9 @@ class _HomePageControllerState extends State<HomePageController>
   int _tapCount = 0;
   String _selectedCity = '';
   String _selectedIndustry = '';
+  List<DateTime> _tapTimestamps = [];
+  List<Duration> _tapIntervals = [];
+  DateTime? _sessionStartTime;
   late UserDataService _userDataService;
   String _homePageTitle = QuoteUtils.getRandomQuote(QuoteType.homePage);
   @override
@@ -93,6 +98,20 @@ class _HomePageControllerState extends State<HomePageController>
   }
 
   void _handleTap() {
+    final now = DateTime.now();
+
+    if (_sessionStartTime == null) {
+      _sessionStartTime = now;
+    }
+
+    if (_tapTimestamps.isNotEmpty) {
+      final lastTap = _tapTimestamps.last;
+      final interval = now.difference(lastTap);
+      _tapIntervals.add(interval);
+    }
+
+    _tapTimestamps.add(now);
+
     setState(() {
       _tapCount++;
     });
@@ -123,6 +142,100 @@ class _HomePageControllerState extends State<HomePageController>
       _selectedIndustry = value;
     });
     _userDataService.setIndustry(value);
+  }
+
+  Future<DailyReasonData> _computeDailyReason(int currentStreakDays) async {
+    final utils = ReasonScoreUtils();
+    final today = DateTime.now();
+    final todayStr =
+        '${today.year}-${today.month.toString().padLeft(2, '0')}-${today.day.toString().padLeft(2, '0')}';
+
+    final existingData = await _userDataService.getDailyReasonData();
+    final existingReasons = <DailyReasonItem>[];
+
+    if (existingData != null &&
+        existingData.date.year == today.year &&
+        existingData.date.month == today.month &&
+        existingData.date.day == today.day) {
+      existingReasons.addAll(existingData.reasons);
+    }
+
+    int tapCount = _tapTimestamps.length;
+    double avgInterval = 0;
+    if (_tapIntervals.isNotEmpty) {
+      avgInterval =
+          _tapIntervals.fold<double>(0, (sum, d) => sum + d.inMilliseconds) /
+              _tapIntervals.length;
+    }
+    double sessionDuration = 0;
+    if (_sessionStartTime != null && _tapTimestamps.isNotEmpty) {
+      sessionDuration = _tapTimestamps.last
+          .difference(_sessionStartTime!)
+          .inSeconds
+          .toDouble();
+    }
+
+    TimeSlot slot;
+    final hour = today.hour;
+    final weekday = today.weekday;
+
+    if (weekday == DateTime.sunday && hour >= 20) {
+      slot = TimeSlot.sunNight;
+    } else if (weekday >= DateTime.monday &&
+        weekday <= DateTime.friday &&
+        hour >= 9 &&
+        hour < 18) {
+      slot = TimeSlot.wkdayDay;
+    } else if (weekday == DateTime.monday && hour >= 6 && hour < 12) {
+      slot = TimeSlot.monMorning;
+    } else if (weekday == DateTime.friday && hour >= 18) {
+      slot = TimeSlot.friNight;
+    } else {
+      slot = TimeSlot.other;
+    }
+
+    final input = DailyInput(
+      c: tapCount,
+      delta: avgInterval,
+      t: sessionDuration,
+      slot: slot,
+    );
+
+    final scores = utils.computeFinalScores(input, currentStreakDays);
+
+    final reasonNames = ['工作内容/强度', '情绪消耗', '未来不确定', '人际关系', '回报不匹配', '倦怠/无意义'];
+
+    final newReasons = <DailyReasonItem>[];
+
+    for (int i = 0; i < scores.length; i++) {
+      final reasonName = reasonNames[i];
+      final existingIndex =
+          existingReasons.indexWhere((r) => r.reasonName == reasonName);
+      double finalScore = scores[i];
+
+      if (existingIndex >= 0) {
+        final existing = existingReasons[existingIndex];
+        finalScore = (existing.score + scores[i]) / 2;
+        newReasons.add(DailyReasonItem(
+          reasonName: reasonName,
+          score: finalScore,
+          tapCount: existing.tapCount + tapCount,
+        ));
+      } else {
+        newReasons.add(DailyReasonItem(
+          reasonName: reasonName,
+          score: scores[i],
+          tapCount: tapCount,
+        ));
+      }
+    }
+
+    newReasons.sort((a, b) => b.score.compareTo(a.score));
+
+    return DailyReasonData(
+      date: today,
+      reasons: newReasons,
+    );
   }
 
   @override
@@ -280,6 +393,10 @@ class _HomePageControllerState extends State<HomePageController>
                           _isSubmitting = true;
                         });
 
+                        final days = await userDataService.getDays();
+                        final dailyReason = await _computeDailyReason(days);
+                        await userDataService.saveDailyReasonData(dailyReason);
+
                         final success = await userDataService.syncCheckin();
 
                         setState(() {
@@ -287,6 +404,11 @@ class _HomePageControllerState extends State<HomePageController>
                         });
 
                         if (success) {
+                          _tapTimestamps = [];
+                          _tapIntervals = [];
+                          _sessionStartTime = null;
+                          _tapCount = 0;
+
                           Get.snackbar(
                             '打卡成功',
                             '恭喜你又坚持了一天！',

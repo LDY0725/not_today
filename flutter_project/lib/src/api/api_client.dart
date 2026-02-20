@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'api_exception.dart';
 import 'interceptors/request_interceptor.dart';
 import 'interceptors/response_interceptor.dart';
+import '../models/user_data.dart';
 
 class ApiClient {
   static final ApiClient _instance = ApiClient._internal();
@@ -117,20 +118,26 @@ class ApiClient {
     required String userId,
     required String city,
     required String industry,
+    DailyReasonData? dailyReasonData,
   }) async {
     try {
+      final Map<String, dynamic> data = {
+        'userId': userId,
+        'city': city,
+        'industry': industry,
+      };
+      
+      if (dailyReasonData != null) {
+        data['dailyReasonData'] = dailyReasonData.toJson();
+      }
+      
       final response = await _dio.post(
         '/api/nottoday/checkin',
-        data: {
-          'userId': userId,
-          'city': city,
-          'industry': industry,
-        },
+        data: data,
       );
       return response.data;
     } on DioException catch (e) {
-      print(e);
-      throw ApiException.fromDioError(e.error);
+      throw ApiException(message: '未知错误: $e');
     }
   }
 }

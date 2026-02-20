@@ -120,6 +120,7 @@ func CheckIn(c *gin.Context) {
 	today := time.Now().Format("2006-01-02")
 	isNewCheckIn := false
 	checkedInDates := []string{}
+
 	if user == nil {
 		user, err = db.CreateUser(req.UserId, req.City, req.Industry)
 		if err != nil {
@@ -139,7 +140,6 @@ func CheckIn(c *gin.Context) {
 			user.Industry = req.Industry
 			updated = true
 		}
-
 		checkedInDates = strings.Split(user.CheckedInDates, ",")
 
 		alreadyCheckedIn := false
@@ -156,7 +156,6 @@ func CheckIn(c *gin.Context) {
 			user.LastUpdated = time.Now()
 			updated = true
 			isNewCheckIn = true
-
 			user.CheckedInDates = strings.Join(checkedInDates, ",")
 
 			if err := db.UpdateUser(user); err != nil {
@@ -170,6 +169,12 @@ func CheckIn(c *gin.Context) {
 				c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update user"})
 				return
 			}
+		}
+	}
+
+	if req.DailyReasonData != nil {
+		if err := db.SaveDailyReasonData(req.UserId, req.DailyReasonData); err != nil {
+			log.Printf("Failed to save daily reason data: %v", err)
 		}
 	}
 
@@ -203,6 +208,7 @@ func CheckIn(c *gin.Context) {
 		IndustryResignationInfo: industryStats,
 		AppRankingPercentile:    rankingPercentile,
 	}
+
 	c.JSON(http.StatusOK, gin.H{"data": response, "code": 200})
 }
 

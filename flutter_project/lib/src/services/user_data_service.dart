@@ -177,7 +177,7 @@ class UserDataService {
 
   Future<void> addCheckedInDate(String date) async {
     final data = await getUserData();
-    final dateStr = _formatDate(date);
+    final dateStr = _formatDateFromIso(date);
     if (!data.checkedInDates.contains(dateStr)) {
       data.checkedInDates.add(dateStr);
       await saveUserData(data);
@@ -186,12 +186,16 @@ class UserDataService {
 
   Future<bool> isCheckedInToday() async {
     final data = await getUserData();
-    final today = _formatDate(DateTime.now().toIso8601String());
+    final today = _formatDate(DateTime.now());
     return data.checkedInDates.contains(today);
   }
 
-  String _formatDate(String isoDateStr) {
+  String _formatDateFromIso(String isoDateStr) {
     final date = DateTime.parse(isoDateStr);
+    return '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
+  }
+
+  String _formatDate(DateTime date) {
     return '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
   }
 
@@ -273,14 +277,15 @@ class UserDataService {
 
   Future<bool> syncCheckin() async {
     try {
-      print(111);
       final data = await getUserData();
+
       final response = await ApiClient.instance.checkin(
         userId: data.userId,
         city: data.city,
         industry: data.industry,
+        dailyReasonData: data.dailyReasonData,
       );
-      print(response);
+
       final checkinResponse = api.CheckinResponse.fromJson(response);
 
       data.userId = checkinResponse.userId;
@@ -304,5 +309,16 @@ class UserDataService {
       debugPrint('Sync checkin failed: $e');
       return false;
     }
+  }
+
+  Future<void> saveDailyReasonData(DailyReasonData reasonData) async {
+    final data = await getUserData();
+    data.dailyReasonData = reasonData;
+    await saveUserData(data);
+  }
+
+  Future<DailyReasonData?> getDailyReasonData() async {
+    final data = await getUserData();
+    return data.dailyReasonData;
   }
 }

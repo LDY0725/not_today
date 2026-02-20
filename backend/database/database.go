@@ -20,7 +20,7 @@ type DB struct {
 var db *DB
 
 const (
-	host     = "127.0.0.1"
+	host     = "38.47.239.243"
 	port     = 3306
 	username = "root"
 	password = "littlebridgeYYDS001"
@@ -94,6 +94,36 @@ func (d *DB) UpdateUser(user *models.User) error {
 	user.CheckedInDates = string(checkedInDatesJSON)
 	user.UpdatedAt = time.Now()
 	return d.DB.Save(user).Error
+}
+
+func (d *DB) SaveDailyReasonData(userId string, reasonData *models.DailyReasonRequest) error {
+	reasonDataJSON, _ := json.Marshal(reasonData)
+
+	return d.DB.Model(&models.User{}).
+		Where("user_id = ?", userId).
+		Update("daily_reason_data", string(reasonDataJSON)).Error
+}
+
+func (d *DB) GetDailyReasonData(userId string) (*models.DailyReasonRequest, error) {
+	var user models.User
+	err := d.DB.Select("daily_reason_data").Where("user_id = ?", userId).First(&user).Error
+	if err == gorm.ErrRecordNotFound {
+		return nil, nil
+	}
+	if err != nil {
+		return nil, err
+	}
+
+	if user.DailyReasonData == "" || user.DailyReasonData == "" {
+		return nil, nil
+	}
+
+	var result models.DailyReasonRequest
+	if err := json.Unmarshal([]byte(user.DailyReasonData), &result); err != nil {
+		return nil, err
+	}
+
+	return &result, nil
 }
 
 func (d *DB) GetTotalUsers() (int64, error) {

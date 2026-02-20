@@ -39,6 +39,17 @@ class _ReportShareCardPageControllerState
           _city = userData.city.isNotEmpty ? userData.city : '';
           _industry = userData.industry.isNotEmpty ? userData.industry : '产品经理';
           _rankPercent = userData.appRankingPercentile;
+          if (userData.dailyReasonData?.reasons != null &&
+              userData.dailyReasonData!.reasons!.isNotEmpty) {
+            final sortedReasons =
+                List<DailyReasonItem>.from(userData.dailyReasonData!.reasons!)
+                  ..sort((a, b) => b.score.compareTo(a.score));
+            final topTwo =
+                sortedReasons.take(2).map((e) => e.reasonName).toList();
+            _reason = topTwo.join(' + ');
+          } else {
+            _reason = '无效会议 + 午休被占';
+          }
         });
       }
     } catch (e) {
