@@ -46,6 +46,8 @@ class _PaymentPageControllerState extends State<PaymentPageController> {
         });
       }
     } catch (e) {
+      print(e);
+      print("----");
       setState(() {
         _isProcessing = false;
         _errorMessage = '支付错误: $e';

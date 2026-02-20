@@ -117,6 +117,7 @@ class PaymentService {
     final response = await inAppPurchase.queryProductDetails(productIds);
 
     if (response.error != null) {
+      print(response);
       debugPrint('Product query error: ${response.error?.message}');
       return false;
     }
