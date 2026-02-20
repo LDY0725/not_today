@@ -1,19 +1,100 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../services/payment_service.dart';
+import '../services/user_data_service.dart';
 
-class PaymentPageController extends StatelessWidget {
+class PaymentPageController extends StatefulWidget {
   const PaymentPageController({super.key});
+
+  @override
+  State<PaymentPageController> createState() => _PaymentPageControllerState();
+}
+
+class _PaymentPageControllerState extends State<PaymentPageController> {
+  bool _isProcessing = false;
+  String? _errorMessage;
+
+  @override
+  void initState() {
+    super.initState();
+    _initPayment();
+  }
+
+  Future<void> _initPayment() async {
+    await PaymentService.getInstance();
+    setState(() {});
+  }
+
+  Future<void> _handlePayment() async {
+    if (_isProcessing) return;
+
+    setState(() {
+      _isProcessing = true;
+      _errorMessage = null;
+    });
+
+    try {
+      final paymentService = await PaymentService.getInstance();
+      final success = await paymentService.purchase();
+
+      if (success) {
+        await _checkPaymentResult();
+      } else {
+        setState(() {
+          _isProcessing = false;
+          _errorMessage = '发起支付失败，请稍后重试';
+        });
+      }
+    } catch (e) {
+      setState(() {
+        _isProcessing = false;
+        _errorMessage = '支付错误: $e';
+      });
+    }
+  }
+
+  Future<void> _checkPaymentResult() async {
+    await Future.delayed(const Duration(seconds: 2));
+
+    final userDataService = await UserDataService.getInstance();
+    final isPro = await userDataService.isProUser();
+
+    if (mounted) {
+      setState(() {
+        _isProcessing = false;
+      });
+
+      if (isPro) {
+        Get.snackbar(
+          '支付成功',
+          '感谢您的支持！',
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: const Color(0xFF07C160),
+          colorText: Colors.white,
+        );
+
+        await Future.delayed(const Duration(seconds: 1));
+
+        if (mounted) {
+          Get.offAllNamed('/detail_report');
+        }
+      } else {
+        setState(() {
+          _errorMessage = '支付未完成，请重试';
+        });
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     const primaryColor = Color(0xFFec5b13);
     const backgroundLight = Color(0xFFf8f6f6);
-    const backgroundDark = Color(0xFF121212);
 
     final isDarkMode = false;
 
     return Scaffold(
-      backgroundColor: isDarkMode ? backgroundDark : backgroundLight,
+      backgroundColor: isDarkMode ? const Color(0xFF121212) : backgroundLight,
       body: SafeArea(
         child: Column(
           children: [
@@ -29,6 +110,10 @@ class PaymentPageController extends StatelessWidget {
                     _buildPriceSection(primaryColor, isDarkMode),
                     const SizedBox(height: 32),
                     _buildPaymentMethods(primaryColor, isDarkMode),
+                    if (_errorMessage != null) ...[
+                      const SizedBox(height: 16),
+                      _buildErrorMessage(),
+                    ],
                   ],
                 ),
               ),
@@ -41,14 +126,10 @@ class PaymentPageController extends StatelessWidget {
   }
 
   Widget _buildTopNavigation(Color primaryColor, bool isDarkMode) {
-    const bgLight = const Color(0xFFf8f6f6);
-    const bgDark = const Color(0xFF121212);
-    const backgroundLight = bgLight;
-    const backgroundDark = bgDark;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
       decoration: BoxDecoration(
-        color: (isDarkMode ? backgroundDark : backgroundLight)
+        color: (isDarkMode ? const Color(0xFF121212) : Colors.white)
             .withValues(alpha: 0.8),
         border: Border(
           bottom: BorderSide(
@@ -82,7 +163,7 @@ class PaymentPageController extends StatelessWidget {
             ),
             Expanded(
               child: Text(
-                '支付确认',
+                '解锁完整报告',
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   color: isDarkMode ? Colors.white : const Color(0xFF1e293b),
@@ -126,16 +207,6 @@ class PaymentPageController extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  '当前选择',
-                  style: TextStyle(
-                    color: primaryColor,
-                    fontSize: 12,
-                    fontWeight: FontWeight.w600,
-                    letterSpacing: 2,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Text(
                   '完整忍耐报告',
                   style: TextStyle(
                     color: isDarkMode ? Colors.white : const Color(0xFF1e293b),
@@ -143,15 +214,16 @@ class PaymentPageController extends StatelessWidget {
                     fontWeight: FontWeight.w700,
                   ),
                 ),
-                const SizedBox(height: 4),
+                const SizedBox(height: 8),
                 Text(
-                  '解锁深度分析与建议',
+                  '解锁深度分析与建议\n查看完整行业报告',
                   style: TextStyle(
                     color: isDarkMode
                         ? Colors.white.withValues(alpha: 0.6)
                         : const Color(0xFF64748b),
                     fontSize: 14,
                     fontWeight: FontWeight.w400,
+                    height: 1.5,
                   ),
                 ),
               ],
@@ -178,17 +250,6 @@ class PaymentPageController extends StatelessWidget {
   Widget _buildPriceSection(Color primaryColor, bool isDarkMode) {
     return Column(
       children: [
-        Text(
-          '应付金额',
-          style: TextStyle(
-            color: isDarkMode
-                ? Colors.white.withValues(alpha: 0.6)
-                : const Color(0xFF64748b),
-            fontSize: 14,
-            fontWeight: FontWeight.w400,
-          ),
-        ),
-        const SizedBox(height: 8),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.baseline,
@@ -204,16 +265,26 @@ class PaymentPageController extends StatelessWidget {
                 fontWeight: FontWeight.w400,
               ),
             ),
-            Text(
+            const Text(
               '1.90',
               style: TextStyle(
-                color: isDarkMode ? Colors.white : const Color(0xFF1e293b),
+                color: Color(0xFF1e293b),
                 fontSize: 56,
                 fontWeight: FontWeight.w800,
                 letterSpacing: -1,
               ),
             ),
           ],
+        ),
+        const SizedBox(height: 8),
+        Text(
+          '一次性购买，永久使用',
+          style: TextStyle(
+            color: isDarkMode
+                ? Colors.white.withValues(alpha: 0.5)
+                : const Color(0xFF64748b),
+            fontSize: 12,
+          ),
         ),
       ],
     );
@@ -284,15 +355,7 @@ class PaymentPageController extends StatelessWidget {
     required bool isSelected,
   }) {
     return GestureDetector(
-      onTap: () {
-        Get.snackbar(
-          '提示',
-          '支付功能开发中...',
-          snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: primaryColor,
-          colorText: Colors.white,
-        );
-      },
+      onTap: () {},
       child: Container(
         decoration: BoxDecoration(
           color: isDarkMode
@@ -375,7 +438,7 @@ class PaymentPageController extends StatelessWidget {
                 color: isSelected ? primaryColor : Colors.transparent,
               ),
               child: isSelected
-                  ? Icon(
+                  ? const Icon(
                       Icons.check,
                       color: Colors.white,
                       size: 12,
@@ -384,6 +447,29 @@ class PaymentPageController extends StatelessWidget {
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildErrorMessage() {
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: Colors.red.withValues(alpha: 0.1),
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: Colors.red.withValues(alpha: 0.3)),
+      ),
+      child: Row(
+        children: [
+          const Icon(Icons.error_outline, color: Colors.red, size: 20),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Text(
+              _errorMessage ?? '',
+              style: const TextStyle(color: Colors.red, fontSize: 14),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -407,32 +493,28 @@ class PaymentPageController extends StatelessWidget {
                 elevation: 4,
                 shadowColor: primaryColor.withValues(alpha: 0.3),
               ),
-              onPressed: () {
-                Get.snackbar(
-                  '支付成功',
-                  '感谢您的支持！',
-                  snackPosition: SnackPosition.BOTTOM,
-                  backgroundColor: primaryColor,
-                  colorText: Colors.white,
-                );
-                Future.delayed(const Duration(seconds: 2), () {
-                  Get.offAllNamed('/detail_report');
-                });
-              },
+              onPressed: _isProcessing ? null : _handlePayment,
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Text(
-                    '立即支付',
-                    style: TextStyle(
+                  if (_isProcessing)
+                    const SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        valueColor: AlwaysStoppedAnimation(Colors.white),
+                      ),
+                    )
+                  else
+                    const Icon(Icons.lock, size: 20),
+                  const SizedBox(width: 8),
+                  Text(
+                    _isProcessing ? '支付中...' : '立即支付 ¥1.90',
+                    style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w700,
                     ),
-                  ),
-                  const SizedBox(width: 8),
-                  Icon(
-                    Icons.arrow_forward,
-                    size: 20,
                   ),
                 ],
               ),
@@ -449,7 +531,7 @@ class PaymentPageController extends StatelessWidget {
               ),
               const SizedBox(width: 6),
               Text(
-                '¥1.9 一次性｜不订阅，不自动扣费',
+                '一次性购买｜不订阅，不自动扣费',
                 style: TextStyle(
                   color: primaryColor.withValues(alpha: 0.5),
                   fontSize: 12,

@@ -10,6 +10,7 @@ class UserData {
   List<String> checkedInDates;
   List<IndustryResignationData> industryResignationInfo;
   double appRankingPercentile;
+  bool isPro;
   Map<String, dynamic>? extraData;
 
   UserData({
@@ -21,6 +22,7 @@ class UserData {
     List<String>? checkedInDates,
     List<IndustryResignationData>? industryResignationInfo,
     double? appRankingPercentile,
+    this.isPro = false,
     this.extraData,
   })  : userId = userId ?? _generateUserId(),
         checkedInDates = checkedInDates ?? [],
@@ -43,6 +45,7 @@ class UserData {
       'checkedInDates': checkedInDates,
       'industryResignationInfo': industryResignationInfo.map((e) => e.toJson()).toList(),
       'appRankingPercentile': appRankingPercentile,
+      'isPro': isPro,
       'extraData': extraData,
     };
   }
@@ -62,6 +65,7 @@ class UserData {
           .toList() ??
           [],
       appRankingPercentile: (json['appRankingPercentile'] as num?)?.toDouble() ?? 100.0,
+      isPro: (json['isPro'] as bool?) ?? false,
       extraData: json['extraData'] as Map<String, dynamic>?,
     );
   }
@@ -81,6 +85,7 @@ class UserData {
     List<String>? checkedInDates,
     List<IndustryResignationData>? industryResignationInfo,
     double? appRankingPercentile,
+    bool? isPro,
     Map<String, dynamic>? extraData,
   }) {
     return UserData(
@@ -92,6 +97,7 @@ class UserData {
       checkedInDates: checkedInDates ?? this.checkedInDates,
       industryResignationInfo: industryResignationInfo ?? this.industryResignationInfo,
       appRankingPercentile: appRankingPercentile ?? this.appRankingPercentile,
+      isPro: isPro ?? this.isPro,
       extraData: extraData ?? this.extraData,
     );
   }

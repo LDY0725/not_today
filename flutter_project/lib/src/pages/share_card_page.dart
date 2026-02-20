@@ -273,7 +273,7 @@ class _ShareCardPageControllerState extends State<ShareCardPageController>
                 textBaseline: TextBaseline.alphabetic,
                 children: [
                   Text(
-                    '${_userData.days > 0 ? _userData.days : 128}',
+                    '${_userData.days > 0 ? _userData.days : 0}',
                     style: TextStyle(
                       color: primaryColor,
                       fontSize: 72,

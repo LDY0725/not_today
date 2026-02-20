@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../services/user_data_service.dart';
+import '../services/payment_service.dart';
 import '../models/user_data.dart';
 
 class DetailReportPage extends StatefulWidget {
@@ -15,6 +16,7 @@ class _DetailReportPageState extends State<DetailReportPage> {
   int _streakPercent = 35;
   double _rankPercent = 82;
   String _year = '2026';
+  bool _isPro = false;
 
   List<IndustryResignationData> _industries = [];
 
@@ -27,9 +29,12 @@ class _DetailReportPageState extends State<DetailReportPage> {
   void loadData() async {
     try {
       final userDataService = await UserDataService.getInstance();
-      final userData = await userDataService.getUserData();
+      final paymentService = await PaymentService.getInstance();
 
       if (!mounted) return;
+
+      final userData = await userDataService.getUserData();
+      final isPro = await userDataService.isProUser();
 
       setState(() {
         _totalDays = userData.days;
@@ -37,6 +42,7 @@ class _DetailReportPageState extends State<DetailReportPage> {
         _rankPercent = userData.appRankingPercentile;
         _streakPercent = _calculateStreakPercent(userData.days);
         _year = DateTime.now().year.toString();
+        _isPro = isPro || userData.isPro;
       });
     } catch (e) {
       debugPrint('加载数据失败: $e');
@@ -480,7 +486,7 @@ class _DetailReportPageState extends State<DetailReportPage> {
         height: 56,
         child: ElevatedButton(
           style: ElevatedButton.styleFrom(
-            backgroundColor: primaryColor,
+            backgroundColor: _isPro ? primaryColor : const Color(0xFFec5b13),
             foregroundColor: Colors.white,
             padding: const EdgeInsets.symmetric(vertical: 16),
             shape: RoundedRectangleBorder(
@@ -490,19 +496,23 @@ class _DetailReportPageState extends State<DetailReportPage> {
             shadowColor: primaryColor.withValues(alpha: 0.4),
           ),
           onPressed: () {
-            Get.toNamed('/report_share_card');
+            if (_isPro) {
+              Get.toNamed('/report_share_card');
+            } else {
+              Get.toNamed('/payment');
+            }
           },
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Icon(
-                Icons.share,
+                _isPro ? Icons.share : Icons.lock,
                 size: 22,
               ),
               const SizedBox(width: 8),
-              const Text(
-                '生成报告分享卡',
-                style: TextStyle(
+              Text(
+                _isPro ? '生成报告分享卡' : '付费解锁完整报告',
+                style: const TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w600,
                   letterSpacing: 1,

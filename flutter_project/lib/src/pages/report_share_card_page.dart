@@ -35,8 +35,8 @@ class _ReportShareCardPageControllerState
 
       if (mounted) {
         setState(() {
-          _totalDays = userData.days > 0 ? userData.days : 128;
-          _city = userData.city.isNotEmpty ? userData.city : '上海';
+          _totalDays = userData.days > 0 ? userData.days : 0;
+          _city = userData.city.isNotEmpty ? userData.city : '';
           _industry = userData.industry.isNotEmpty ? userData.industry : '产品经理';
           _rankPercent = userData.appRankingPercentile;
         });

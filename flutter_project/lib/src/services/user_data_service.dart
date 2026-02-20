@@ -1,7 +1,9 @@
 import 'dart:async';
 import 'dart:math';
+import 'package:flutter/foundation.dart';
 import '../cache/cache_manager.dart';
 import '../models/user_data.dart';
+import 'payment_service.dart';
 
 class UserDataService {
   static UserDataService? _instance;
@@ -33,7 +35,7 @@ class UserDataService {
         return data;
       }
     } catch (e) {
-      print('Error loading user data: $e');
+      debugPrint('Error loading user data: $e');
     }
     return _createNewUser();
   }
@@ -243,5 +245,27 @@ class UserDataService {
   Future<String> getUserId() async {
     final data = await getUserData();
     return data.userId;
+  }
+
+  Future<bool> isProUser() async {
+    try {
+      final paymentService = await PaymentService.getInstance();
+      final isPro = paymentService.isPro;
+      final data = await getUserData();
+      if (data.isPro != isPro) {
+        data.isPro = isPro;
+        await saveUserData(data);
+      }
+      return isPro;
+    } catch (e) {
+      final data = await getUserData();
+      return data.isPro;
+    }
+  }
+
+  Future<void> setProStatus(bool value) async {
+    final data = await getUserData();
+    data.isPro = value;
+    await saveUserData(data);
   }
 }
