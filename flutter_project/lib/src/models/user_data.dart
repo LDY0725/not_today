@@ -12,6 +12,7 @@ class UserData {
   double appRankingPercentile;
   bool isPro;
   Map<String, dynamic>? extraData;
+  DailyReasonData? dailyReasonData;
 
   UserData({
     String? userId,
@@ -24,6 +25,7 @@ class UserData {
     double? appRankingPercentile,
     this.isPro = false,
     this.extraData,
+    this.dailyReasonData,
   })  : userId = userId ?? _generateUserId(),
         checkedInDates = checkedInDates ?? [],
         industryResignationInfo = industryResignationInfo ?? [],
@@ -47,6 +49,7 @@ class UserData {
       'appRankingPercentile': appRankingPercentile,
       'isPro': isPro,
       'extraData': extraData,
+      'dailyReasonData': dailyReasonData?.toJson(),
     };
   }
 
@@ -67,6 +70,9 @@ class UserData {
       appRankingPercentile: (json['appRankingPercentile'] as num?)?.toDouble() ?? 100.0,
       isPro: (json['isPro'] as bool?) ?? false,
       extraData: json['extraData'] as Map<String, dynamic>?,
+      dailyReasonData: json['dailyReasonData'] != null
+          ? DailyReasonData.fromJson(json['dailyReasonData'])
+          : null,
     );
   }
 
@@ -87,6 +93,7 @@ class UserData {
     double? appRankingPercentile,
     bool? isPro,
     Map<String, dynamic>? extraData,
+    DailyReasonData? dailyReasonData,
   }) {
     return UserData(
       userId: userId ?? this.userId,
@@ -99,6 +106,7 @@ class UserData {
       appRankingPercentile: appRankingPercentile ?? this.appRankingPercentile,
       isPro: isPro ?? this.isPro,
       extraData: extraData ?? this.extraData,
+      dailyReasonData: dailyReasonData ?? this.dailyReasonData,
     );
   }
 
@@ -135,6 +143,83 @@ class IndustryResignationData {
     return IndustryResignationData(
       industryName: industryName ?? this.industryName,
       resignationPercentage: resignationPercentage ?? this.resignationPercentage,
+    );
+  }
+}
+
+class DailyReasonData {
+  DateTime date;
+  List<DailyReasonItem> reasons;
+
+  DailyReasonData({
+    required this.date,
+    required this.reasons,
+  });
+
+  Map<String, dynamic> toJson() {
+    return {
+      'date': date.toIso8601String(),
+      'reasons': reasons.map((e) => e.toJson()).toList(),
+    };
+  }
+
+  factory DailyReasonData.fromJson(Map<String, dynamic> json) {
+    return DailyReasonData(
+      date: json['date'] != null ? DateTime.parse(json['date']) : DateTime.now(),
+      reasons: (json['reasons'] as List?)
+          ?.map((e) => DailyReasonItem.fromJson(e))
+          .toList() ??
+          [],
+    );
+  }
+
+  DailyReasonData copyWith({
+    DateTime? date,
+    List<DailyReasonItem>? reasons,
+  }) {
+    return DailyReasonData(
+      date: date ?? this.date,
+      reasons: reasons ?? this.reasons,
+    );
+  }
+}
+
+class DailyReasonItem {
+  String reasonName;
+  double score;
+  int tapCount;
+
+  DailyReasonItem({
+    required this.reasonName,
+    required this.score,
+    this.tapCount = 0,
+  });
+
+  Map<String, dynamic> toJson() {
+    return {
+      'reasonName': reasonName,
+      'score': score,
+      'tapCount': tapCount,
+    };
+  }
+
+  factory DailyReasonItem.fromJson(Map<String, dynamic> json) {
+    return DailyReasonItem(
+      reasonName: json['reasonName'] ?? '',
+      score: (json['score'] as num?)?.toDouble() ?? 0.0,
+      tapCount: (json['tapCount'] as int?) ?? 0,
+    );
+  }
+
+  DailyReasonItem copyWith({
+    String? reasonName,
+    double? score,
+    int? tapCount,
+  }) {
+    return DailyReasonItem(
+      reasonName: reasonName ?? this.reasonName,
+      score: score ?? this.score,
+      tapCount: tapCount ?? this.tapCount,
     );
   }
 }
