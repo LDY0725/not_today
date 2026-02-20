@@ -238,59 +238,64 @@ class _HomePageControllerState extends State<HomePageController>
       onTapUp: (_) => setState(() => _isPressed = false),
       onTapCancel: () => setState(() => _isPressed = false),
       onTap: _handleTap,
-      child: Column(
-        children: [
-          AnimatedSwitcher(
-            duration: const Duration(milliseconds: 150),
-            child: _isPressed
-                ? Image.asset(
-                    'assets/images/dark2.png',
-                    key: const ValueKey('pressed'),
+      child: SizedBox(
+        height: 340,
+        child: Stack(
+          alignment: Alignment.topCenter,
+          children: [
+            Image.asset(
+              _isPressed
+                  ? 'assets/images/dark2.png'
+                  : 'assets/images/dark1.png',
+              width: 260,
+              height: 260,
+            ),
+            Positioned(
+              bottom: 0,
+              left: 0,
+              right: 0,
+              child: AnimatedOpacity(
+                duration: const Duration(milliseconds: 200),
+                opacity: _showButton ? 1.0 : 0.0,
+                child: IgnorePointer(
+                  ignoring: !_showButton,
+                  child: SizedBox(
                     width: 260,
-                    height: 260,
-                  )
-                : Image.asset(
-                    'assets/images/dark1.png',
-                    key: const ValueKey('normal'),
-                    width: 260,
-                    height: 260,
-                  ),
-          ),
-          if (_showButton) ...[
-            const SizedBox(height: 24),
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.symmetric(horizontal: 48),
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: primaryColor,
-                  foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  elevation: 8,
-                ),
-                onPressed: () async {
-                  final userDataService = await UserDataService.getInstance();
-                  await userDataService.updateUserData(
-                    days: 128,
-                    city: _selectedCity,
-                    industry: _selectedIndustry,
-                  );
-                  Get.toNamed('/result');
-                },
-                child: const Text(
-                  '我不干了！',
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.w900,
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: primaryColor,
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        elevation: 8,
+                      ),
+                      onPressed: () async {
+                        final userDataService =
+                            await UserDataService.getInstance();
+                        await userDataService.updateUserData(
+                          days: 128,
+                          city: _selectedCity,
+                          industry: _selectedIndustry,
+                        );
+                        Get.toNamed('/result');
+                      },
+                      child: const Text(
+                        '我不干了！',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.w900,
+                        ),
+                      ),
+                    ),
                   ),
                 ),
               ),
             ),
           ],
-        ],
+        ),
       ),
     );
   }

@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'dart:convert';
-import 'dart:math' as math;
-import '../cache/cache_manager.dart';
+import '../services/user_data_service.dart';
 import '../models/user_data.dart';
 
 class ReportShareCardPageController extends StatefulWidget {
@@ -16,9 +14,9 @@ class ReportShareCardPageController extends StatefulWidget {
 class _ReportShareCardPageControllerState
     extends State<ReportShareCardPageController> {
   int _totalDays = 0;
-  int _rankPercent = 82;
-  String _city = '上海';
-  String _industry = '产品经理';
+  double _rankPercent = 82;
+  String _city = '';
+  String _industry = '';
   String _reason = '无效会议 + 午休被占';
 
   @override
@@ -29,24 +27,16 @@ class _ReportShareCardPageControllerState
 
   Future<void> _loadData() async {
     try {
-      final cacheManager = await CacheManager.getInstance();
-      final jsonString = await cacheManager.getString(CacheKeys.userData);
-
-      if (jsonString != null) {
-        try {
-          final userData = jsonDecode(jsonString);
-          _totalDays = userData['days'] ?? 128;
-          _city = userData['city'] ?? '上海';
-          _industry = userData['industry'] ?? '产品经理';
-        } catch (e) {
-          _totalDays = 128;
-        }
-      } else {
-        _totalDays = 128;
-      }
+      final userDataService = await UserDataService.getInstance();
+      final userData = await userDataService.getUserData();
 
       if (mounted) {
-        setState(() {});
+        setState(() {
+          _totalDays = userData.days > 0 ? userData.days : 128;
+          _city = userData.city.isNotEmpty ? userData.city : '上海';
+          _industry = userData.industry.isNotEmpty ? userData.industry : '产品经理';
+          _rankPercent = userData.appRankingPercentile;
+        });
       }
     } catch (e) {
       debugPrint('加载数据失败: $e');
@@ -172,7 +162,7 @@ class _ReportShareCardPageControllerState
                 ),
                 const SizedBox(height: 32),
                 Text(
-                  '今天，我还在。\n$_rankPercent% 忍耐报告',
+                  '今天，我还在。\n${_rankPercent.toStringAsFixed(0)}% 忍耐报告',
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     color: primaryColor,
