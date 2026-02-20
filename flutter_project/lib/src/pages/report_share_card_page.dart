@@ -45,7 +45,7 @@ class _ReportShareCardPageControllerState
 
   @override
   Widget build(BuildContext context) {
-    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+    final isDarkMode = false;
     final primaryColor = const Color(0xFF5d4037);
     final backgroundPaper = const Color(0xFFf7f3ed);
     final backgroundDark = const Color(0xFF2b2118);

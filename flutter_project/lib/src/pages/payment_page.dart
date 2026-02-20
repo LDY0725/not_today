@@ -10,7 +10,7 @@ class PaymentPageController extends StatelessWidget {
     const backgroundLight = Color(0xFFf8f6f6);
     const backgroundDark = Color(0xFF121212);
 
-    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+    final isDarkMode = false;
 
     return Scaffold(
       backgroundColor: isDarkMode ? backgroundDark : backgroundLight,

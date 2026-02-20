@@ -10,7 +10,7 @@ class IndexPageController extends StatelessWidget {
     final backgroundLight = const Color(0xFFf7f7f6);
     final backgroundDark = const Color(0xFF1d1915);
 
-    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+    final isDarkMode = false;
 
     final pages = [
       {

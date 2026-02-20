@@ -10,6 +10,8 @@ import '../models/user_data.dart';
 import '../services/quote_service.dart';
 import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:permission_handler/permission_handler.dart'
+    as permission_handler;
 
 class ShareCardPageController extends StatefulWidget {
   const ShareCardPageController({super.key});
@@ -117,6 +119,17 @@ class _ShareCardPageControllerState extends State<ShareCardPageController>
           colorText: Colors.white,
           duration: const Duration(seconds: 2),
         );
+      } else if (permissionStatus.isPermanentlyDenied) {
+        Get.snackbar(
+          '权限被拒绝',
+          '请在设置中开启相册权限以保存图片',
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Colors.red,
+          colorText: Colors.white,
+          duration: const Duration(seconds: 3),
+        );
+        await Future.delayed(const Duration(seconds: 1));
+        permission_handler.openAppSettings();
       } else {
         Get.snackbar(
           '保存失败',
@@ -146,7 +159,7 @@ class _ShareCardPageControllerState extends State<ShareCardPageController>
 
   @override
   Widget buildContent(BuildContext context) {
-    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+    final isDarkMode = false;
     final primaryColor = const Color(0xFF4a3621);
     final backgroundLight = const Color(0xFFf7f7f6);
     final backgroundDark = const Color(0xFF1d1915);

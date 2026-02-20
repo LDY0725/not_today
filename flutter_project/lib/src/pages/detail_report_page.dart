@@ -55,7 +55,7 @@ class _DetailReportPageState extends State<DetailReportPage> {
 
   @override
   Widget build(BuildContext context) {
-    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+    final isDarkMode = false;
     final primaryColor = const Color(0xFF4a3621);
     final backgroundLight = const Color(0xFFf9f8f3);
     final backgroundDark = const Color(0xFF1d1915);

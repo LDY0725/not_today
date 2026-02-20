@@ -62,7 +62,7 @@ class _ReportPageControllerState extends State<ReportPageController>
 
   @override
   Widget buildContent(BuildContext context) {
-    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+    final isDarkMode = false;
     final primaryColor = const Color(0xFF4a3621);
     final backgroundLight = const Color(0xFFfdfbf7);
     final backgroundDark = const Color(0xFF1d1915);
