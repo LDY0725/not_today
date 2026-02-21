@@ -107,7 +107,7 @@ class _ShareCardPageControllerState extends State<ShareCardPageController>
       body: SafeArea(
         child: Column(
           children: [
-            _buildTopNavigation(primaryColor),
+            _buildTopNavigation(primaryColor, isDarkMode),
             Expanded(
               child: SingleChildScrollView(
                 child: Column(
@@ -126,14 +126,12 @@ class _ShareCardPageControllerState extends State<ShareCardPageController>
     );
   }
 
-  Widget _buildTopNavigation(Color primaryColor) {
+  Widget _buildTopNavigation(Color primaryColor, bool isDarkMode) {
     final backgroundDark = const Color(0xFF1d1915);
     return Container(
       decoration: BoxDecoration(
-        color: (Theme.of(context).brightness == Brightness.dark
-                ? backgroundDark
-                : Colors.white)
-            .withValues(alpha: 0.8),
+        color:
+            (isDarkMode ? backgroundDark : Colors.white).withValues(alpha: 0.8),
         border: Border(
           bottom: BorderSide(
             color: primaryColor.withValues(alpha: 0.05),
@@ -164,9 +162,7 @@ class _ShareCardPageControllerState extends State<ShareCardPageController>
               '分享卡片预览',
               textAlign: TextAlign.center,
               style: TextStyle(
-                color: Theme.of(context).brightness == Brightness.dark
-                    ? Colors.white
-                    : primaryColor,
+                color: isDarkMode ? Colors.white : primaryColor,
                 fontSize: 16,
                 fontWeight: FontWeight.w700,
                 height: 1.2,

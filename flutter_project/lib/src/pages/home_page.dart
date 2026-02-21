@@ -408,7 +408,7 @@ class _HomePageControllerState extends State<HomePageController>
                           _tapIntervals = [];
                           _sessionStartTime = null;
                           _tapCount = 0;
-
+                          Get.closeCurrentSnackbar();
                           Get.snackbar(
                             '打卡成功',
                             '恭喜你又坚持了一天！',
@@ -418,6 +418,7 @@ class _HomePageControllerState extends State<HomePageController>
                           );
                           Get.toNamed('/result');
                         } else {
+                          Get.closeCurrentSnackbar();
                           Get.snackbar(
                             '打卡失败',
                             '请稍后重试',

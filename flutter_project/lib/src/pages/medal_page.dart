@@ -193,6 +193,7 @@ class _MedalPageControllerState extends State<MedalPageController>
         borderRadius: BorderRadius.circular(16),
         onTap: () {
           if (isLocked) {
+            Get.closeCurrentSnackbar();
             Get.snackbar(
               '未解锁',
               '需要连续签到 ${medal.requiredDays} 天才能解锁',

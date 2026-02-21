@@ -5,27 +5,25 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:get/get.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:fluwx/fluwx.dart';
+import 'package:share_plus/share_plus.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class WechatShareUtils {
   static const String _wechatAppId = 'wxfae9158c846191a0';
-  static bool _isFluwxInitialized = false;
-
-  static Future<void> _initializeFluwx() async {
-    if (_isFluwxInitialized) return;
-
-    final isInstalled = await fluwx.isWeChatInstalled;
-    if (isInstalled) {
-      await fluwx.initWeChatApp(_wechatAppId);
-      _isFluwxInitialized = true;
-    }
-  }
 
   static Future<bool> isWeChatInstalled() async {
     try {
-      return await fluwx.isWeChatInstalled;
+      final wechatUrl = Uri.parse('weixin://');
+      return await canLaunchUrl(wechatUrl);
     } catch (e) {
       return false;
+    }
+  }
+
+  static Future<void> openWeChatDownloadPage() async {
+    final url = Uri.parse('https://weixin.qq.com/');
+    if (await canLaunchUrl(url)) {
+      await launchUrl(url, mode: LaunchMode.externalApplication);
     }
   }
 
@@ -118,8 +116,6 @@ class WechatShareUtils {
         return false;
       }
 
-      await _initializeFluwx();
-
       final filePath = await captureWidgetToTempFilePath(
         repaintBoundaryKey: repaintBoundaryKey,
         context: context,
@@ -131,22 +127,16 @@ class WechatShareUtils {
         return false;
       }
 
-      final result = await fluwx.shareToWeChat(
-        fluwx.WeChatShareImageModel(
-          image: File(filePath),
-          text: text ?? '不干了 - 职业勋章',
-          scene: fluwx.WeChatScene.SESSION,
-        ),
+      final XFile xFile = XFile(filePath);
+
+      await Share.shareXFiles(
+        [xFile],
+        text: text ?? '不干了 - 职业勋章',
       );
 
-      if (result) {
-        return true;
-      } else {
-        _showErrorSnackbar('分享失败');
-        return false;
-      }
+      return true;
     } catch (e) {
-      print('分享到微信失败: $e');
+      print('分享失败: $e');
       _showErrorSnackbar('分享失败: $e');
       return false;
     }
@@ -165,36 +155,29 @@ class WechatShareUtils {
         return false;
       }
 
-      await _initializeFluwx();
-
       final directory = await getApplicationDocumentsDirectory();
       final String path =
           '${directory.path}/${fileName}_${DateTime.now().millisecondsSinceEpoch}.png';
       final file = File(path);
       await file.writeAsBytes(imageBytes);
 
-      final result = await fluwx.shareToWeChat(
-        fluwx.WeChatShareImageModel(
-          image: file,
-          text: text ?? '不干了 - 职业勋章',
-          scene: fluwx.WeChatScene.SESSION,
-        ),
+      final XFile xFile = XFile(path);
+
+      await Share.shareXFiles(
+        [xFile],
+        text: text ?? '不干了 - 职业勋章',
       );
 
-      if (result) {
-        return true;
-      } else {
-        _showErrorSnackbar('分享失败');
-        return false;
-      }
+      return true;
     } catch (e) {
-      print('分享到微信失败: $e');
+      print('分享失败: $e');
       _showErrorSnackbar('分享失败: $e');
       return false;
     }
   }
 
   static void _showWechatNotInstalledSnackbar() {
+    Get.closeCurrentSnackbar();
     Get.snackbar(
       '未安装微信',
       '请先安装微信后再分享',
@@ -206,6 +189,7 @@ class WechatShareUtils {
   }
 
   static void _showErrorSnackbar(String message) {
+    Get.closeCurrentSnackbar();
     Get.snackbar(
       '分享失败',
       message,
@@ -217,6 +201,7 @@ class WechatShareUtils {
   }
 
   static void _showSuccessSnackbar() {
+    Get.closeCurrentSnackbar();
     Get.snackbar(
       '分享成功',
       '请选择分享方式',

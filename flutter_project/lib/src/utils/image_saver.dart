@@ -5,7 +5,8 @@ import 'package:flutter/rendering.dart';
 import 'package:get/get.dart';
 import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:permission_handler/permission_handler.dart' as permission_handler;
+import 'package:permission_handler/permission_handler.dart'
+    as permission_handler;
 
 class ImageSaver {
   static Future<bool> saveWidgetToGallery({
@@ -75,6 +76,7 @@ class ImageSaver {
   }
 
   static void _showSuccessSnackbar() {
+    Get.closeCurrentSnackbar();
     Get.snackbar(
       '保存成功',
       '卡片已保存到相册',
@@ -86,6 +88,7 @@ class ImageSaver {
   }
 
   static void _showErrorSnackbar(String message) {
+    Get.closeCurrentSnackbar();
     Get.snackbar(
       '保存失败',
       message,
@@ -97,6 +100,7 @@ class ImageSaver {
   }
 
   static void _showPermissionDeniedSnackbar() {
+    Get.closeCurrentSnackbar();
     Get.snackbar(
       '权限不足',
       '请在设置中开启相册权限',
@@ -108,6 +112,7 @@ class ImageSaver {
   }
 
   static void _showPermanentlyDeniedSnackbar() {
+    Get.closeCurrentSnackbar();
     Get.snackbar(
       '权限被拒绝',
       '请在设置中开启相册权限以保存图片',

@@ -67,6 +67,7 @@ class _PaymentPageControllerState extends State<PaymentPageController> {
       });
 
       if (isPro) {
+        Get.closeCurrentSnackbar();
         Get.snackbar(
           '支付成功',
           '感谢您的支持！',
