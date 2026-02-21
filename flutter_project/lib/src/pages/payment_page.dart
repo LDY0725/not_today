@@ -320,28 +320,6 @@ class _PaymentPageControllerState extends State<PaymentPageController> {
           bgColor: Colors.black,
           isSelected: true,
         ),
-        const SizedBox(height: 12),
-        _buildPaymentOption(
-          primaryColor: primaryColor,
-          isDarkMode: isDarkMode,
-          name: '微信支付',
-          description: '使用微信零钱或银行卡',
-          icon: Icons.chat,
-          iconColor: const Color(0xFF07C160),
-          bgColor: const Color(0xFF07C160),
-          isSelected: false,
-        ),
-        const SizedBox(height: 12),
-        _buildPaymentOption(
-          primaryColor: primaryColor,
-          isDarkMode: isDarkMode,
-          name: '支付宝',
-          description: '支持余额、花呗支付',
-          icon: Icons.account_balance_wallet,
-          iconColor: const Color(0xFF1677FF),
-          bgColor: const Color(0xFF1677FF),
-          isSelected: false,
-        ),
       ],
     );
   }

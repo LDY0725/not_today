@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import '../services/user_data_service.dart';
 import '../models/user_data.dart';
 import '../utils/image_saver.dart';
+import '../utils/wechat_share_utils.dart';
 
 class ReportShareCardPageController extends StatefulWidget {
   const ReportShareCardPageController({super.key});
@@ -20,6 +21,7 @@ class _ReportShareCardPageControllerState
   String _industry = '';
   String _reason = '无效会议 + 午休被占';
   bool _isSaving = false;
+  bool _isSharing = false;
   final GlobalKey _cardKey = GlobalKey();
 
   @override
@@ -71,6 +73,25 @@ class _ReportShareCardPageControllerState
     setState(() {
       _isSaving = !success;
     });
+  }
+
+  Future<void> _shareToWechat(BuildContext context) async {
+    setState(() {
+      _isSharing = true;
+    });
+
+    final success = await WechatShareUtils.shareToWechat(
+      repaintBoundaryKey: _cardKey,
+      context: context,
+      text: '今天，我还在。$_rankPercent% 忍耐报告 - 我已经坚持了$_totalDays天！',
+      fileName: 'report_card',
+    );
+
+    if (mounted) {
+      setState(() {
+        _isSharing = false;
+      });
+    }
   }
 
   @override
@@ -404,6 +425,41 @@ class _ReportShareCardPageControllerState
                 const SizedBox(width: 8),
                 Text(
                   _isSaving ? '保存中...' : '保存图片',
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+        const SizedBox(height: 12),
+        SizedBox(
+          width: double.infinity,
+          height: 56,
+          child: ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFF07C160),
+              foregroundColor: Colors.white,
+              padding: const EdgeInsets.symmetric(vertical: 16),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+              elevation: 4,
+              shadowColor: const Color(0xFF07C160).withValues(alpha: 0.3),
+            ),
+            onPressed: _isSharing ? null : () => _shareToWechat(context),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Icon(
+                  Icons.chat_bubble,
+                  size: 22,
+                ),
+                const SizedBox(width: 8),
+                Text(
+                  _isSharing ? '分享中...' : '微信分享',
                   style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w700,

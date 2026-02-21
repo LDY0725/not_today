@@ -1,3 +1,4 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../services/user_data_service.dart';
@@ -17,6 +18,7 @@ class _DetailReportPageState extends State<DetailReportPage> {
   double _rankPercent = 82;
   String _year = '2026';
   bool _isPro = false;
+  List<String> _topReasons = [];
 
   List<IndustryResignationData> _industries = [];
 
@@ -35,6 +37,16 @@ class _DetailReportPageState extends State<DetailReportPage> {
 
       final userData = await userDataService.getUserData();
       final isPro = await userDataService.isProUser();
+
+      if (userData.dailyReasonData?.reasons != null &&
+          userData.dailyReasonData!.reasons!.isNotEmpty) {
+        final sortedReasons =
+            List<DailyReasonItem>.from(userData.dailyReasonData!.reasons!)
+              ..sort((a, b) => b.score.compareTo(a.score));
+        _topReasons = sortedReasons.take(2).map((e) => e.reasonName).toList();
+      } else {
+        _topReasons = ['工作内容', '情绪消耗'];
+      }
 
       setState(() {
         _totalDays = userData.days;
@@ -205,184 +217,322 @@ class _DetailReportPageState extends State<DetailReportPage> {
   }
 
   Widget _buildReasonCard(Color primaryColor, bool isDarkMode) {
+    final reason1 = _topReasons.isNotEmpty ? _topReasons[0] : '工作内容';
+    final reason2 = _topReasons.length > 1 ? _topReasons[1] : '情绪消耗';
+
+    final content = Column(
+      children: [
+        Row(
+          children: [
+            Text(
+              reason1,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: isDarkMode ? Colors.white : primaryColor,
+                fontSize: 28,
+                fontWeight: FontWeight.w700,
+                fontFamily: 'NotoSerifSC',
+                height: 1.3,
+              ),
+            ),
+            Text(
+              '+',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: primaryColor,
+                fontSize: 22,
+                fontWeight: FontWeight.w700,
+                height: 1.3,
+                fontFamily: 'NotoSerifSC',
+              ),
+            ),
+            Text(
+              reason2,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: isDarkMode ? Colors.white : primaryColor,
+                fontSize: 28,
+                fontWeight: FontWeight.w700,
+                height: 1.3,
+                fontFamily: 'NotoSerifSC',
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 20),
+        Text(
+          '"在这段沉默的时光里，你独自对抗了数不清的琐碎与疲惫。"',
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            color: primaryColor.withValues(alpha: 0.5),
+            fontSize: 12,
+            fontStyle: FontStyle.italic,
+            height: 1.6,
+            letterSpacing: -0.5,
+            fontFamily: 'NotoSerifSC',
+          ),
+        ),
+      ],
+    );
+
     return _buildInfoCard(
       primaryColor: primaryColor,
       isDarkMode: isDarkMode,
       icon: Icons.psychology,
       iconSize: 16,
       title: '最想辞职原因',
-      child: Column(
-        children: [
-          Row(
-            children: [
-              Text(
-                '工作内容',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  color: isDarkMode ? Colors.white : primaryColor,
-                  fontSize: 28,
-                  fontWeight: FontWeight.w700,
-                  fontFamily: 'NotoSerifSC',
-                  height: 1.3,
+      child: _isPro
+          ? content
+          : Stack(
+              children: [
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(8),
+                  child: BackdropFilter(
+                      filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
+                      child: Opacity(
+                        opacity: 0.01,
+                        child: content,
+                      )),
                 ),
-              ),
-              Text(
-                '+',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  color: primaryColor,
-                  fontSize: 22,
-                  fontWeight: FontWeight.w700,
-                  height: 1.3,
-                  fontFamily: 'NotoSerifSC',
+                Positioned.fill(
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: primaryColor.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    alignment: Alignment.center,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.lock,
+                          color: primaryColor,
+                          size: 32,
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          '付费解锁查看',
+                          style: TextStyle(
+                            color: primaryColor,
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
+                            fontFamily: 'NotoSerifSC',
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
-              ),
-              Text(
-                '情绪消耗',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  color: isDarkMode ? Colors.white : primaryColor,
-                  fontSize: 28,
-                  fontWeight: FontWeight.w700,
-                  height: 1.3,
-                  fontFamily: 'NotoSerifSC',
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 20),
-          Text(
-            '"在这段沉默的时光里，你独自对抗了数不清的琐碎与疲惫。"',
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              color: primaryColor.withValues(alpha: 0.5),
-              fontSize: 12,
-              fontStyle: FontStyle.italic,
-              height: 1.6,
-              letterSpacing: -0.5,
-              fontFamily: 'NotoSerifSC',
+              ],
             ),
-          ),
-        ],
-      ),
     );
   }
 
   Widget _buildIndustriesCard(Color primaryColor, bool isDarkMode) {
+    final content = Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const SizedBox(height: 8),
+        ..._industries.map((industry) {
+          final displayPercent =
+              (industry.resignationPercentage / 100).clamp(0.0, 1.0);
+          return Padding(
+            padding: const EdgeInsets.only(bottom: 12),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(
+                      child: Text(
+                        industry.industryName,
+                        style: TextStyle(
+                          color: isDarkMode
+                              ? Colors.white.withValues(alpha: 0.8)
+                              : primaryColor.withValues(alpha: 0.8),
+                          fontSize: 12,
+                          fontWeight: FontWeight.w500,
+                          fontFamily: 'NotoSerifSC',
+                        ),
+                      ),
+                    ),
+                    Text(
+                      '${industry.resignationPercentage.toStringAsFixed(1)}%',
+                      style: TextStyle(
+                        color: isDarkMode
+                            ? Colors.white.withValues(alpha: 0.5)
+                            : primaryColor.withValues(alpha: 0.5),
+                        fontSize: 12,
+                        fontWeight: FontWeight.w500,
+                        fontFamily: 'NotoSerifSC',
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 6),
+                _buildProgressBar(primaryColor, displayPercent, isDarkMode,
+                    barHeight: 4),
+              ],
+            ),
+          );
+        }).toList(),
+      ],
+    );
+
     return _buildInfoCard(
       primaryColor: primaryColor,
       isDarkMode: isDarkMode,
       icon: Icons.leaderboard,
       iconSize: 16,
       title: '最想辞职行业 TOP5',
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const SizedBox(height: 8),
-          ..._industries.map((industry) {
-            final displayPercent =
-                (industry.resignationPercentage / 100).clamp(0.0, 1.0);
-            return Padding(
-              padding: const EdgeInsets.only(bottom: 12),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Expanded(
-                        child: Text(
-                          industry.industryName,
+      child: _isPro
+          ? content
+          : Stack(
+              children: [
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(8),
+                  child: BackdropFilter(
+                      filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
+                      child: Opacity(
+                        opacity: 0.01,
+                        child: content,
+                      )),
+                ),
+                Positioned.fill(
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: primaryColor.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    alignment: Alignment.center,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.lock,
+                          color: primaryColor,
+                          size: 32,
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          '付费解锁查看',
                           style: TextStyle(
-                            color: isDarkMode
-                                ? Colors.white.withValues(alpha: 0.8)
-                                : primaryColor.withValues(alpha: 0.8),
-                            fontSize: 12,
-                            fontWeight: FontWeight.w500,
+                            color: primaryColor,
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
                             fontFamily: 'NotoSerifSC',
                           ),
                         ),
-                      ),
-                      Text(
-                        '${industry.resignationPercentage.toStringAsFixed(1)}%',
-                        style: TextStyle(
-                          color: isDarkMode
-                              ? Colors.white.withValues(alpha: 0.5)
-                              : primaryColor.withValues(alpha: 0.5),
-                          fontSize: 12,
-                          fontWeight: FontWeight.w500,
-                          fontFamily: 'NotoSerifSC',
-                        ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                  const SizedBox(height: 6),
-                  _buildProgressBar(primaryColor, displayPercent, isDarkMode,
-                      barHeight: 4),
-                ],
-              ),
-            );
-          }).toList(),
-        ],
-      ),
+                ),
+              ],
+            ),
     );
   }
 
   Widget _buildRankCard(Color primaryColor, bool isDarkMode) {
+    final content = Column(
+      children: [
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.baseline,
+          textBaseline: TextBaseline.alphabetic,
+          children: [
+            Text(
+              '$_rankPercent%',
+              style: TextStyle(
+                color: isDarkMode ? Colors.white : primaryColor,
+                fontSize: 56,
+                fontWeight: FontWeight.w900,
+                letterSpacing: -2,
+                fontFamily: 'NotoSerifSC',
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(left: 8, top: 16),
+              child: Text(
+                '的忍者',
+                style: TextStyle(
+                  color: primaryColor.withValues(alpha: 0.6),
+                  fontSize: 20,
+                  fontWeight: FontWeight.w600,
+                  fontFamily: 'NotoSerifSC',
+                ),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 24),
+        Row(
+          children: List.generate(4, (index) {
+            final opacity = (index + 1) * 0.25;
+            return Container(
+              width: 8,
+              height: 8,
+              margin: const EdgeInsets.symmetric(horizontal: 4),
+              decoration: BoxDecoration(
+                color: primaryColor.withValues(alpha: opacity.clamp(0.0, 1.0)),
+                shape: BoxShape.circle,
+              ),
+            );
+          }),
+        ),
+      ],
+    );
+
     return _buildInfoCard(
       primaryColor: primaryColor,
       isDarkMode: isDarkMode,
       icon: Icons.workspace_premium,
       iconSize: 16,
       title: '你击败了全国',
-      child: Column(
-        children: [
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.baseline,
-            textBaseline: TextBaseline.alphabetic,
-            children: [
-              Text(
-                '$_rankPercent%',
-                style: TextStyle(
-                  color: isDarkMode ? Colors.white : primaryColor,
-                  fontSize: 56,
-                  fontWeight: FontWeight.w900,
-                  letterSpacing: -2,
-                  fontFamily: 'NotoSerifSC',
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(left: 8, top: 16),
-                child: Text(
-                  '的忍者',
-                  style: TextStyle(
-                    color: primaryColor.withValues(alpha: 0.6),
-                    fontSize: 20,
-                    fontWeight: FontWeight.w600,
-                    fontFamily: 'NotoSerifSC',
+      child: _isPro
+          ? content
+          : Stack(
+              children: [
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(8),
+                  child: BackdropFilter(
+                    filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
+                    child: Opacity(
+                      opacity: 0.01,
+                      child: content,
+                    ),
                   ),
                 ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 24),
-          Row(
-            children: List.generate(4, (index) {
-              final opacity = (index + 1) * 0.25;
-              return Container(
-                width: 8,
-                height: 8,
-                margin: const EdgeInsets.symmetric(horizontal: 4),
-                decoration: BoxDecoration(
-                  color:
-                      primaryColor.withValues(alpha: opacity.clamp(0.0, 1.0)),
-                  shape: BoxShape.circle,
+                Positioned.fill(
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: primaryColor.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    alignment: Alignment.center,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.lock,
+                          color: primaryColor,
+                          size: 32,
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          '付费解锁查看',
+                          style: TextStyle(
+                            color: primaryColor,
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
+                            fontFamily: 'NotoSerifSC',
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
-              );
-            }),
-          ),
-        ],
-      ),
+              ],
+            ),
     );
   }
 
