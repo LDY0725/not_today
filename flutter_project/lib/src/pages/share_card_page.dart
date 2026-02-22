@@ -540,7 +540,7 @@ class _ShareCardPageControllerState extends State<ShareCardPageController>
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   const Icon(
-                    Icons.chat_bubble,
+                    Icons.wechat,
                     size: 22,
                   ),
                   const SizedBox(width: 8),
@@ -577,7 +577,7 @@ class _ShareCardPageControllerState extends State<ShareCardPageController>
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   const Icon(
-                    Icons.chat_bubble,
+                    Icons.wechat,
                     size: 22,
                   ),
                   const SizedBox(width: 8),
