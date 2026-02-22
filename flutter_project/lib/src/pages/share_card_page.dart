@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:fluwx/fluwx.dart';
 import 'package:get/get.dart';
 import 'dart:async';
 import 'dart:typed_data';
@@ -24,7 +25,8 @@ class _ShareCardPageControllerState extends State<ShareCardPageController>
   final GlobalKey _cardKey = GlobalKey();
   UserData _userData = UserData();
   bool _isSaving = false;
-  bool _isSharing = false;
+  bool _isSharingWechat = false;
+  bool _isSharingTimeline = false;
   late String _resultTopText;
   late String _resultBottomText;
   late QuoteService _quoteService;
@@ -75,22 +77,49 @@ class _ShareCardPageControllerState extends State<ShareCardPageController>
     });
   }
 
-  Future<void> _shareToWechat(BuildContext context) async {
-    setState(() {
-      _isSharing = true;
-    });
+  Future<void> _shareToWechat(BuildContext context, WeChatScene scene) async {
+    if (scene == WeChatScene.session) {
+      setState(() {
+        _isSharingWechat = true;
+      });
+    } else {
+      setState(() {
+        _isSharingTimeline = true;
+      });
+    }
 
-    final success = await WechatShareUtils.shareToWechat(
+    final imageBytes = await ImageSaver.transWidgetToImg(
       repaintBoundaryKey: _cardKey,
       context: context,
-      text: '我在坚持不辞职的路上，已经坚持了${_userData.days}天！',
       fileName: 'share_card',
     );
 
+    if (imageBytes == null) {
+      if (scene == WeChatScene.session) {
+        setState(() {
+          _isSharingWechat = false;
+        });
+      } else {
+        setState(() {
+          _isSharingTimeline = false;
+        });
+      }
+      return;
+    }
+
+    final success = await WechatShareUtils.shareImageToWechat(
+        imageBytes: imageBytes, scene: scene);
+
     if (mounted) {
-      setState(() {
-        _isSharing = false;
-      });
+      if (scene == WeChatScene.session) {
+        setState(() {
+          _isSharingWechat = false;
+        });
+      } else {
+        setState(() {
+          _isSharingTimeline = false;
+        });
+      }
     }
   }
 
@@ -129,15 +158,6 @@ class _ShareCardPageControllerState extends State<ShareCardPageController>
   Widget _buildTopNavigation(Color primaryColor, bool isDarkMode) {
     final backgroundDark = const Color(0xFF1d1915);
     return Container(
-      decoration: BoxDecoration(
-        color:
-            (isDarkMode ? backgroundDark : Colors.white).withValues(alpha: 0.8),
-        border: Border(
-          bottom: BorderSide(
-            color: primaryColor.withValues(alpha: 0.05),
-          ),
-        ),
-      ),
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
       child: Row(
         children: [
@@ -355,7 +375,7 @@ class _ShareCardPageControllerState extends State<ShareCardPageController>
           ),
           const SizedBox(height: 16),
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
+            padding: const EdgeInsets.symmetric(horizontal: 4),
             child: Text(
               '"$_resultBottomText"',
               textAlign: TextAlign.center,
@@ -513,7 +533,9 @@ class _ShareCardPageControllerState extends State<ShareCardPageController>
                 elevation: 4,
                 shadowColor: const Color(0xFF07C160).withValues(alpha: 0.3),
               ),
-              onPressed: _isSharing ? null : () => _shareToWechat(context),
+              onPressed: _isSharingWechat
+                  ? null
+                  : () => _shareToWechat(context, WeChatScene.session),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -523,7 +545,7 @@ class _ShareCardPageControllerState extends State<ShareCardPageController>
                   ),
                   const SizedBox(width: 8),
                   Text(
-                    _isSharing ? '分享中...' : '微信分享',
+                    _isSharingWechat ? '分享中...' : '微信分享',
                     style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w700,
@@ -539,24 +561,34 @@ class _ShareCardPageControllerState extends State<ShareCardPageController>
             height: 56,
             child: ElevatedButton(
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.transparent,
-                foregroundColor: primaryColor,
+                backgroundColor: const Color(0xFF07C160),
+                foregroundColor: Colors.white,
                 padding: const EdgeInsets.symmetric(vertical: 16),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),
-                side: BorderSide(
-                  color: primaryColor.withValues(alpha: 0.2),
-                  width: 2,
-                ),
+                elevation: 4,
+                shadowColor: const Color(0xFF07C160).withValues(alpha: 0.3),
               ),
-              onPressed: () => Get.back(),
-              child: const Text(
-                '返回',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w700,
-                ),
+              onPressed: _isSharingTimeline
+                  ? null
+                  : () => _shareToWechat(context, WeChatScene.timeline),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(
+                    Icons.chat_bubble,
+                    size: 22,
+                  ),
+                  const SizedBox(width: 8),
+                  Text(
+                    _isSharingTimeline ? '分享中...' : '朋友圈分享',
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ],
               ),
             ),
           ),

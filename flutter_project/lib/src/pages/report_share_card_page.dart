@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:fluwx/fluwx.dart';
 import 'package:get/get.dart';
 import '../services/user_data_service.dart';
 import '../models/user_data.dart';
@@ -21,7 +22,9 @@ class _ReportShareCardPageControllerState
   String _industry = '';
   String _reason = '无效会议 + 午休被占';
   bool _isSaving = false;
-  bool _isSharing = false;
+  bool _isSharingWechat = false;
+  bool _isSharingTimeline = false;
+
   final GlobalKey _cardKey = GlobalKey();
 
   @override
@@ -75,22 +78,49 @@ class _ReportShareCardPageControllerState
     });
   }
 
-  Future<void> _shareToWechat(BuildContext context) async {
-    setState(() {
-      _isSharing = true;
-    });
+  Future<void> _shareToWechat(BuildContext context, WeChatScene scene) async {
+    if (scene == WeChatScene.session) {
+      setState(() {
+        _isSharingWechat = true;
+      });
+    } else {
+      setState(() {
+        _isSharingTimeline = true;
+      });
+    }
 
-    final success = await WechatShareUtils.shareToWechat(
+    final imageBytes = await ImageSaver.transWidgetToImg(
       repaintBoundaryKey: _cardKey,
       context: context,
-      text: '今天，我还在。$_rankPercent% 忍耐报告 - 我已经坚持了$_totalDays天！',
-      fileName: 'report_card',
+      fileName: 'share_card',
     );
 
+    if (imageBytes == null) {
+      if (scene == WeChatScene.session) {
+        setState(() {
+          _isSharingWechat = false;
+        });
+      } else {
+        setState(() {
+          _isSharingTimeline = false;
+        });
+      }
+      return;
+    }
+
+    final success = await WechatShareUtils.shareImageToWechat(
+        imageBytes: imageBytes, scene: scene);
+
     if (mounted) {
-      setState(() {
-        _isSharing = false;
-      });
+      if (scene == WeChatScene.session) {
+        setState(() {
+          _isSharingWechat = false;
+        });
+      } else {
+        setState(() {
+          _isSharingTimeline = false;
+        });
+      }
     }
   }
 
@@ -449,7 +479,9 @@ class _ReportShareCardPageControllerState
               elevation: 4,
               shadowColor: const Color(0xFF07C160).withValues(alpha: 0.3),
             ),
-            onPressed: _isSharing ? null : () => _shareToWechat(context),
+            onPressed: _isSharingWechat
+                ? null
+                : () => _shareToWechat(context, WeChatScene.session),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -459,7 +491,7 @@ class _ReportShareCardPageControllerState
                 ),
                 const SizedBox(width: 8),
                 Text(
-                  _isSharing ? '分享中...' : '微信分享',
+                  _isSharingWechat ? '分享中...' : '微信分享',
                   style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w700,
@@ -475,24 +507,34 @@ class _ReportShareCardPageControllerState
           height: 56,
           child: ElevatedButton(
             style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.transparent,
-              foregroundColor: primaryColor,
+              backgroundColor: const Color(0xFF07C160),
+              foregroundColor: Colors.white,
               padding: const EdgeInsets.symmetric(vertical: 16),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
-                side: BorderSide(
-                  color: primaryColor.withValues(alpha: 0.2),
-                  width: 2,
-                ),
               ),
+              elevation: 4,
+              shadowColor: const Color(0xFF07C160).withValues(alpha: 0.3),
             ),
-            onPressed: () => Get.back(),
-            child: const Text(
-              '返回',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w700,
-              ),
+            onPressed: _isSharingTimeline
+                ? null
+                : () => _shareToWechat(context, WeChatScene.timeline),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Icon(
+                  Icons.chat_bubble,
+                  size: 22,
+                ),
+                const SizedBox(width: 8),
+                Text(
+                  _isSharingTimeline ? '分享中...' : '朋友圈分享',
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ],
             ),
           ),
         ),

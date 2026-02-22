@@ -15,31 +15,15 @@ class ImageSaver {
     String fileName = 'share_card',
   }) async {
     try {
-      final RenderRepaintBoundary? repaintBoundary =
-          repaintBoundaryKey.currentContext?.findRenderObject()
-              as RenderRepaintBoundary?;
-
-      if (repaintBoundary == null) {
-        _showErrorSnackbar('无法获取卡片渲染对象');
-        return false;
-      }
-
-      await Future.delayed(const Duration(milliseconds: 100));
-
-      final image = await repaintBoundary.toImage(
-        pixelRatio: MediaQuery.of(context).devicePixelRatio,
+      final Uint8List? imageBytes = await transWidgetToImg(
+        repaintBoundaryKey: repaintBoundaryKey,
+        context: context,
+        fileName: fileName,
       );
 
-      final byteData = await image.toByteData(
-        format: ui.ImageByteFormat.png,
-      );
-
-      if (byteData == null) {
-        _showErrorSnackbar('图片转换失败');
+      if (imageBytes == null) {
         return false;
       }
-
-      final Uint8List imageBytes = byteData.buffer.asUint8List();
 
       final permissionStatus = await Permission.photos.request();
 
@@ -72,6 +56,45 @@ class ImageSaver {
     } catch (e) {
       _showErrorSnackbar('保存失败: $e');
       return false;
+    }
+  }
+
+  static Future<Uint8List?> transWidgetToImg({
+    required GlobalKey repaintBoundaryKey,
+    required BuildContext context,
+    String fileName = 'share_card',
+  }) async {
+    try {
+      final RenderRepaintBoundary? repaintBoundary =
+          repaintBoundaryKey.currentContext?.findRenderObject()
+              as RenderRepaintBoundary?;
+
+      if (repaintBoundary == null) {
+        _showErrorSnackbar('无法获取卡片渲染对象');
+        return null;
+      }
+
+      await Future.delayed(const Duration(milliseconds: 100));
+
+      final image = await repaintBoundary.toImage(
+        pixelRatio: MediaQuery.of(context).devicePixelRatio,
+      );
+
+      final byteData = await image.toByteData(
+        format: ui.ImageByteFormat.png,
+      );
+
+      if (byteData == null) {
+        _showErrorSnackbar('图片转换失败');
+        return null;
+      }
+
+      final Uint8List imageBytes = byteData.buffer.asUint8List();
+
+      return imageBytes;
+    } catch (e) {
+      _showErrorSnackbar('图片转换失败');
+      return null;
     }
   }
 

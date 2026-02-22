@@ -5,6 +5,18 @@ version: 1.0.0+1
 environment:
   sdk: ">=3.0.0 <4.0.0"
 
+  fluwx:
+    app_id: "wxfae9158c846191a0"
+    debug_logging: true # Logging in debug mode.
+    android:
+    #    interrupt_wx_request: true # Defaults to true.
+    #    flutter_activity: 'MainActivity' # Defaults to app's launcher
+    ios:
+      universal_link: https://www.zeai.ai/buganle/
+      #    scene_delegate: true # Defaults to false.
+      no_pay: true # Set to true to disable payment.
+    #    ignore_security: true # Set to true to disable security seetings.
+
 dependencies:
   flutter:
     sdk: flutter
@@ -18,7 +30,7 @@ dependencies:
   permission_handler: ^11.1.0
   in_app_purchase: ^3.2.0
   share_plus: ^7.2.1
-  url_launcher: ^6.2.2
+  fluwx: ^5.7.5
 
 dev_dependencies:
   flutter_test:

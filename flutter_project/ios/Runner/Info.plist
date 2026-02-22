@@ -100,5 +100,14 @@
 		</array>
 	</dict>
 	</array>
+
+
+	<key>LSApplicationQueriesSchemes</key>
+	<array>
+		<string>weixin</string>          <!-- 基础微信 Scheme -->
+		<string>weixinULAPI</string>     <!-- 核心：Universal Links 必需 -->
+		<string>wechat</string>          <!-- 兼容旧版微信 -->
+		<string>wechatpay</string>       <!-- 微信支付（可选，若用到） -->
+	</array>
 </dict>
 </plist>
