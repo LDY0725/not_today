@@ -28,7 +28,7 @@ class MyApp extends StatelessWidget {
         useMaterial3: true,
       ),
       themeMode: ThemeMode.system,
-      initialRoute: '/',
+      initialRoute: '/home',
       getPages: [
         GetPage(
           name: '/',

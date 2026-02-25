@@ -24,7 +24,8 @@ class WechatShareUtils {
       print('微信已安装2');
       fluwx.registerApi(
           appId: "wxfae9158c846191a0",
-          universalLink: "https://www.zeai.ai/buganle/");
+          universalLink: "https://little-bridge.com/buganle/aa/");
+
       _isInitialized = true;
     }
   }

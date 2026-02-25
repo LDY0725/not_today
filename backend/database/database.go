@@ -20,7 +20,7 @@ type DB struct {
 var db *DB
 
 const (
-	host     = "38.47.239.243"
+	host     = "127.0.0.1"
 	port     = 3306
 	username = "root"
 	password = "littlebridgeYYDS001"

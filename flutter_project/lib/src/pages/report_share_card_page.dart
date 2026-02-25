@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:fluwx/fluwx.dart';
 import 'package:get/get.dart';
 import '../services/user_data_service.dart';
@@ -522,9 +523,10 @@ class _ReportShareCardPageControllerState
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Icon(
-                  Icons.wechat,
-                  size: 22,
+                SvgPicture.asset(
+                  'assets/images/wechat_moments.svg',
+                  width: 22,
+                  height: 22,
                 ),
                 const SizedBox(width: 8),
                 Text(

@@ -16,7 +16,7 @@ class ApiClient {
   }
 
   static late final Dio _dio;
-  static const String _baseUrl = 'http://38.47.239.243:8080';
+  static const String _baseUrl = 'https://www.little-bridge.com';
 
   static final BaseOptions _options = BaseOptions(
     baseUrl: _baseUrl,
@@ -126,11 +126,11 @@ class ApiClient {
         'city': city,
         'industry': industry,
       };
-      
+
       if (dailyReasonData != null) {
         data['dailyReasonData'] = dailyReasonData.toJson();
       }
-      
+
       final response = await _dio.post(
         '/api/nottoday/checkin',
         data: data,
