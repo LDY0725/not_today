@@ -33,8 +33,10 @@ class UserData {
 
   static String _generateUserId() {
     final random = Random();
-    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-    return List.generate(16, (index) => chars[random.nextInt(chars.length)]).join();
+    const chars =
+        'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    return List.generate(16, (index) => chars[random.nextInt(chars.length)])
+        .join();
   }
 
   Map<String, dynamic> toJson() {
@@ -45,7 +47,8 @@ class UserData {
       'industry': industry,
       'lastUpdated': lastUpdated?.toIso8601String(),
       'checkedInDates': checkedInDates,
-      'industryResignationInfo': industryResignationInfo.map((e) => e.toJson()).toList(),
+      'industryResignationInfo':
+          industryResignationInfo.map((e) => e.toJson()).toList(),
       'appRankingPercentile': appRankingPercentile,
       'isPro': isPro,
       'extraData': extraData,
@@ -64,11 +67,12 @@ class UserData {
           : null,
       checkedInDates: (json['checkedInDates'] as List?)?.cast<String>() ?? [],
       industryResignationInfo: (json['industryResignationInfo'] as List?)
-          ?.map((e) => IndustryResignationData.fromJson(e))
-          .toList() ??
+              ?.map((e) => IndustryResignationData.fromJson(e))
+              .toList() ??
           [],
-      appRankingPercentile: (json['appRankingPercentile'] as num?)?.toDouble() ?? 100.0,
       isPro: (json['isPro'] as bool?) ?? false,
+      appRankingPercentile:
+          (json['appRankingPercentile'] as num?)?.toDouble() ?? 100.0,
       extraData: json['extraData'] as Map<String, dynamic>?,
       dailyReasonData: json['dailyReasonData'] != null
           ? DailyReasonData.fromJson(json['dailyReasonData'])
@@ -102,7 +106,8 @@ class UserData {
       industry: industry ?? this.industry,
       lastUpdated: lastUpdated ?? this.lastUpdated,
       checkedInDates: checkedInDates ?? this.checkedInDates,
-      industryResignationInfo: industryResignationInfo ?? this.industryResignationInfo,
+      industryResignationInfo:
+          industryResignationInfo ?? this.industryResignationInfo,
       appRankingPercentile: appRankingPercentile ?? this.appRankingPercentile,
       isPro: isPro ?? this.isPro,
       extraData: extraData ?? this.extraData,
@@ -132,7 +137,8 @@ class IndustryResignationData {
   factory IndustryResignationData.fromJson(Map<String, dynamic> json) {
     return IndustryResignationData(
       industryName: json['industryName'] ?? '',
-      resignationPercentage: (json['resignationPercentage'] as num?)?.toDouble() ?? 0.0,
+      resignationPercentage:
+          (json['resignationPercentage'] as num?)?.toDouble() ?? 0.0,
     );
   }
 
@@ -142,7 +148,8 @@ class IndustryResignationData {
   }) {
     return IndustryResignationData(
       industryName: industryName ?? this.industryName,
-      resignationPercentage: resignationPercentage ?? this.resignationPercentage,
+      resignationPercentage:
+          resignationPercentage ?? this.resignationPercentage,
     );
   }
 }
@@ -165,10 +172,11 @@ class DailyReasonData {
 
   factory DailyReasonData.fromJson(Map<String, dynamic> json) {
     return DailyReasonData(
-      date: json['date'] != null ? DateTime.parse(json['date']) : DateTime.now(),
+      date:
+          json['date'] != null ? DateTime.parse(json['date']) : DateTime.now(),
       reasons: (json['reasons'] as List?)
-          ?.map((e) => DailyReasonItem.fromJson(e))
-          .toList() ??
+              ?.map((e) => DailyReasonItem.fromJson(e))
+              .toList() ??
           [],
     );
   }

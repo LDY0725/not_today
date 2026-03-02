@@ -262,9 +262,9 @@ class _HomePageControllerState extends State<HomePageController>
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   _buildHeroContent(primaryColor, isDarkMode),
-                  const SizedBox(height: 32),
+                  const SizedBox(height: 16),
                   _buildCoffeeCupArea(primaryColor, isDarkMode),
-                  const SizedBox(height: 32),
+                  const SizedBox(height: 16),
                   _buildTapHint(isDarkMode),
                 ],
               ),
@@ -347,14 +347,16 @@ class _HomePageControllerState extends State<HomePageController>
   }
 
   Widget _buildCoffeeCupArea(Color primaryColor, bool isDarkMode) {
+    print(_isPressed);
     return GestureDetector(
       onTapDown: (_) => setState(() => _isPressed = true),
       onTapUp: (_) => setState(() => _isPressed = false),
       onTapCancel: () => setState(() => _isPressed = false),
       onTap: _handleTap,
       child: SizedBox(
-        height: 340,
+        height: 300,
         child: Stack(
+          clipBehavior: Clip.none,
           alignment: Alignment.topCenter,
           children: [
             Image.asset(
@@ -365,7 +367,7 @@ class _HomePageControllerState extends State<HomePageController>
               height: 260,
             ),
             Positioned(
-              bottom: 0,
+              bottom: -30,
               left: 0,
               right: 0,
               child: AnimatedOpacity(
@@ -467,54 +469,65 @@ class _HomePageControllerState extends State<HomePageController>
   }
 
   Widget _buildSelectionBar(Color primaryColor, bool isDarkMode) {
-    return Padding(
-      padding: const EdgeInsets.all(24.0),
-      child: Row(
-        children: [
-          Expanded(
-            child: _buildDropdownSelector(
-              primaryColor: primaryColor,
-              hint: '你在哪个城市',
-              value: _selectedCity.isEmpty ? null : _selectedCity,
-              items: QuoteUtils.cities.map((city) {
-                return DropdownMenuItem(
-                  value: city,
-                  child: Text(
-                    city,
-                    style: TextStyle(
-                      color: primaryColor,
-                      fontSize: 14,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                );
-              }).toList(),
-              onChanged: _onCityChanged,
-              isDarkMode: isDarkMode,
-            ),
+    return Container(
+      margin: const EdgeInsets.fromLTRB(24.0, 0, 24.0, 24.0),
+      padding: const EdgeInsets.all(20.0),
+      decoration: BoxDecoration(
+        color: isDarkMode ? const Color(0xFF1d1915) : Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: primaryColor.withValues(alpha: 0.08),
+            blurRadius: 20,
+            offset: const Offset(0, 4),
           ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: _buildDropdownSelector(
-              primaryColor: primaryColor,
-              hint: '你做什么行业',
-              value: _selectedIndustry.isEmpty ? null : _selectedIndustry,
-              items: QuoteUtils.industries.map((industry) {
-                return DropdownMenuItem(
-                  value: industry,
-                  child: Text(
-                    industry,
-                    style: TextStyle(
-                      color: primaryColor,
-                      fontSize: 14,
-                      fontWeight: FontWeight.w500,
-                    ),
+        ],
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          _buildDropdownSelector(
+            primaryColor: primaryColor,
+            hint: '你在哪个城市',
+            value: _selectedCity.isEmpty ? null : _selectedCity,
+            items: QuoteUtils.cities.map((city) {
+              return DropdownMenuItem(
+                value: city,
+                child: Text(
+                  city,
+                  style: TextStyle(
+                    color: primaryColor,
+                    fontSize: 15,
+                    fontWeight: FontWeight.w500,
                   ),
-                );
-              }).toList(),
-              onChanged: _onIndustryChanged,
-              isDarkMode: isDarkMode,
-            ),
+                ),
+              );
+            }).toList(),
+            onChanged: _onCityChanged,
+            isDarkMode: isDarkMode,
+            icon: Icons.location_on_outlined,
+          ),
+          const SizedBox(height: 16),
+          _buildDropdownSelector(
+            primaryColor: primaryColor,
+            hint: '你做什么行业',
+            value: _selectedIndustry.isEmpty ? null : _selectedIndustry,
+            items: QuoteUtils.industries.map((industry) {
+              return DropdownMenuItem(
+                value: industry,
+                child: Text(
+                  industry,
+                  style: TextStyle(
+                    color: primaryColor,
+                    fontSize: 15,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              );
+            }).toList(),
+            onChanged: _onIndustryChanged,
+            isDarkMode: isDarkMode,
+            icon: Icons.work_outline,
           ),
         ],
       ),
@@ -528,21 +541,15 @@ class _HomePageControllerState extends State<HomePageController>
     required List<DropdownMenuItem<String>> items,
     required void Function(String?) onChanged,
     required bool isDarkMode,
+    IconData? icon,
   }) {
     return Container(
       decoration: BoxDecoration(
-        color: isDarkMode ? const Color(0xFF1d1915) : Colors.white,
-        borderRadius: BorderRadius.circular(8),
+        color: isDarkMode ? const Color(0xFF2a2420) : const Color(0xFFfaf9f8),
+        borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: primaryColor.withValues(alpha: 0.1),
+          color: primaryColor.withValues(alpha: 0.06),
         ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
-            blurRadius: 4,
-            offset: const Offset(0, 2),
-          ),
-        ],
       ),
       child: DropdownButtonFormField<String>(
         value: value,
@@ -550,31 +557,49 @@ class _HomePageControllerState extends State<HomePageController>
           hint,
           style: TextStyle(
             color: primaryColor.withValues(alpha: 0.5),
-            fontSize: 14,
+            fontSize: 15,
             fontWeight: FontWeight.w500,
+            fontFamily: 'NotoSerifSC',
           ),
         ),
         items: items,
         onChanged: onChanged,
         icon: Padding(
-          padding: const EdgeInsets.only(right: 8),
+          padding: const EdgeInsets.only(right: 12),
           child: Icon(
-            Icons.expand_more,
-            color: primaryColor.withValues(alpha: 0.4),
-            size: 20,
+            Icons.keyboard_arrow_down_rounded,
+            color: primaryColor.withValues(alpha: 0.5),
+            size: 24,
           ),
         ),
-        decoration: const InputDecoration(
-          contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        decoration: InputDecoration(
+          contentPadding:
+              const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
           border: InputBorder.none,
           isDense: true,
+          prefixIcon: icon != null
+              ? Padding(
+                  padding: const EdgeInsets.only(left: 12, right: 8),
+                  child: Icon(
+                    icon,
+                    color: value != null
+                        ? primaryColor.withValues(alpha: 0.7)
+                        : primaryColor.withValues(alpha: 0.35),
+                    size: 20,
+                  ),
+                )
+              : null,
+          prefixIconConstraints:
+              const BoxConstraints(minWidth: 40, minHeight: 20),
         ),
-        dropdownColor: isDarkMode ? const Color(0xFF1d1915) : Colors.white,
+        dropdownColor: isDarkMode ? const Color(0xFF2a2420) : Colors.white,
         style: TextStyle(
-          color: primaryColor.withValues(alpha: 0.8),
-          fontSize: 14,
+          color: primaryColor,
+          fontSize: 15,
           fontWeight: FontWeight.w600,
+          fontFamily: 'NotoSerifSC',
         ),
+        borderRadius: BorderRadius.circular(12),
       ),
     );
   }

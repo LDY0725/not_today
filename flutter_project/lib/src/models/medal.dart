@@ -54,11 +54,9 @@ class MedalData {
     required this.currentStreak,
   });
 
-  List<Medal> get unlockedMedals =>
-      medals.where((m) => m.isUnlocked).toList();
+  List<Medal> get unlockedMedals => medals.where((m) => m.isUnlocked).toList();
 
-  List<Medal> get lockedMedals =>
-      medals.where((m) => !m.isUnlocked).toList();
+  List<Medal> get lockedMedals => medals.where((m) => !m.isUnlocked).toList();
 
   int get totalMedals => medals.length;
   int get unlockedCount => unlockedMedals.length;
@@ -154,6 +152,14 @@ class MedalService {
         isUnlocked: currentStreak >= medal.requiredDays,
       );
     }).toList();
+  }
+
+  Medal? getHighestUnlockedMedal(int currentStreak) {
+    final unlocked =
+        _medals.where((m) => currentStreak >= m.requiredDays).toList();
+    if (unlocked.isEmpty) return null;
+    unlocked.sort((a, b) => b.requiredDays.compareTo(a.requiredDays));
+    return unlocked.first;
   }
 }
 

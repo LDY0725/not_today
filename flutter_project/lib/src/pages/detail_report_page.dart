@@ -222,11 +222,13 @@ class _DetailReportPageState extends State<DetailReportPage> {
 
     final content = Column(
       children: [
-        Row(
+        Wrap(
+          alignment: WrapAlignment.start,
+          crossAxisAlignment: WrapCrossAlignment.center,
           children: [
             Text(
               reason1,
-              textAlign: TextAlign.center,
+              textAlign: TextAlign.left,
               style: TextStyle(
                 color: isDarkMode ? Colors.white : primaryColor,
                 fontSize: 28,
@@ -434,6 +436,7 @@ class _DetailReportPageState extends State<DetailReportPage> {
   }
 
   Widget _buildRankCard(Color primaryColor, bool isDarkMode) {
+    String rankPercent = _rankPercent.toStringAsFixed(2);
     final content = Column(
       children: [
         Row(
@@ -441,7 +444,7 @@ class _DetailReportPageState extends State<DetailReportPage> {
           textBaseline: TextBaseline.alphabetic,
           children: [
             Text(
-              '$_rankPercent%',
+              '$rankPercent%',
               style: TextStyle(
                 color: isDarkMode ? Colors.white : primaryColor,
                 fontSize: 56,

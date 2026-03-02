@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_project/src/models/medal.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:fluwx/fluwx.dart';
 import 'package:get/get.dart';
@@ -341,6 +342,11 @@ class _ShareCardPageControllerState extends State<ShareCardPageController>
   }
 
   Widget _buildBadgeSection(Color primaryColor) {
+    final modal =
+        MedalService.getInstance().getHighestUnlockedMedal(_userData.days);
+    if (modal == null) {
+      return const SizedBox.shrink();
+    }
     return Center(
       child: Column(
         children: [
@@ -363,7 +369,7 @@ class _ShareCardPageControllerState extends State<ShareCardPageController>
                 ),
                 const SizedBox(width: 6),
                 Text(
-                  '🙃 明年再说型选手',
+                  modal.name,
                   style: TextStyle(
                     color: primaryColor,
                     fontSize: 14,
@@ -525,14 +531,15 @@ class _ShareCardPageControllerState extends State<ShareCardPageController>
             height: 56,
             child: ElevatedButton(
               style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF07C160),
-                foregroundColor: Colors.white,
+                backgroundColor: Colors.transparent,
+                foregroundColor: primaryColor,
+                side: BorderSide(color: primaryColor.withValues(alpha: 0.3)),
                 padding: const EdgeInsets.symmetric(vertical: 16),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),
                 elevation: 4,
-                shadowColor: const Color(0xFF07C160).withValues(alpha: 0.3),
+                shadowColor: Colors.transparent,
               ),
               onPressed: _isSharingWechat
                   ? null
@@ -562,14 +569,15 @@ class _ShareCardPageControllerState extends State<ShareCardPageController>
             height: 56,
             child: ElevatedButton(
               style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF07C160),
-                foregroundColor: Colors.white,
+                backgroundColor: Colors.transparent,
+                foregroundColor: primaryColor,
+                side: BorderSide(color: primaryColor.withValues(alpha: 0.3)),
                 padding: const EdgeInsets.symmetric(vertical: 16),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),
                 elevation: 4,
-                shadowColor: const Color(0xFF07C160).withValues(alpha: 0.3),
+                shadowColor: Colors.transparent,
               ),
               onPressed: _isSharingTimeline
                   ? null

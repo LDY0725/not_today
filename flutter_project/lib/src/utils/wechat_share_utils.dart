@@ -24,7 +24,9 @@ class WechatShareUtils {
       print('微信已安装2');
       fluwx.registerApi(
           appId: "wxfae9158c846191a0",
-          universalLink: "https://little-bridge.com/buganle/aa/");
+          doOnAndroid: true,
+          doOnIOS: true,
+          universalLink: "https://little-bridge.com/buganle/");
 
       _isInitialized = true;
     }

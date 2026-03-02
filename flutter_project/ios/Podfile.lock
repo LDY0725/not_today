@@ -2,16 +2,15 @@ PODS:
   - Flutter (1.0.0)
   - fluwx (0.0.1):
     - Flutter
-    - fluwx/no_pay (= 0.0.1)
-  - fluwx/no_pay (0.0.1):
+    - fluwx/pay (= 0.0.1)
+  - fluwx/pay (0.0.1):
     - Flutter
-    - OpenWeChatSDKNoPay (~> 2.0.5)
+    - WechatOpenSDK-XCFramework (~> 2.0.5)
   - image_gallery_saver (2.0.2):
     - Flutter
   - in_app_purchase_storekit (0.0.1):
     - Flutter
     - FlutterMacOS
-  - OpenWeChatSDKNoPay (2.0.5)
   - path_provider_foundation (0.0.1):
     - Flutter
     - FlutterMacOS
@@ -22,6 +21,7 @@ PODS:
   - shared_preferences_foundation (0.0.1):
     - Flutter
     - FlutterMacOS
+  - WechatOpenSDK-XCFramework (2.0.5)
 
 DEPENDENCIES:
   - Flutter (from `Flutter`)
@@ -35,7 +35,7 @@ DEPENDENCIES:
 
 SPEC REPOS:
   trunk:
-    - OpenWeChatSDKNoPay
+    - WechatOpenSDK-XCFramework
 
 EXTERNAL SOURCES:
   Flutter:
@@ -57,14 +57,14 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   Flutter: cabc95a1d2626b1b06e7179b784ebcf0c0cde467
-  fluwx: fc07b03ebb407d68ae135a9f31967de03a5d11b2
+  fluwx: 2ef787502fccb3f3596b380509001a8ea71cbbff
   image_gallery_saver: 14711d79da40581063e8842a11acf1969d781ed7
   in_app_purchase_storekit: 22cca7d08eebca9babdf4d07d0baccb73325d3c8
-  OpenWeChatSDKNoPay: a391d2a7c0d4db1bdc870f885bd4cba99b64f243
   path_provider_foundation: 080d55be775b7414fd5a5ef3ac137b97b097e564
   permission_handler_apple: 4ed2196e43d0651e8ff7ca3483a069d469701f2d
   share_plus: de6030e33b4e106470e09322d87cf2a4258d2d1d
   shared_preferences_foundation: 9e1978ff2562383bd5676f64ec4e9aa8fa06a6f7
+  WechatOpenSDK-XCFramework: ff342ae616bb86df3d236aca38059dfd4bc4a949
 
 PODFILE CHECKSUM: 8a74733c55252e3315a1cf2165aaefae6abcd29e
 

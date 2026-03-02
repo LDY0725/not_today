@@ -2,13 +2,6 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>NSAllowsArbitraryLoads</key>
-	<true/>
-	<key>NSCellularDataUsageDescription</key>
-	<string>需要使用蜂窝网络访问服务器接口</string>
-	<!-- 新增：日历权限说明（解决90683错误） -->
-	<key>NSCalendarsUsageDescription</key>
-	<string>我们需要访问日历来优化打卡提醒、时间规划等功能体验</string>
 	<key>CADisableMinimumFrameDurationOnPhone</key>
 	<true/>
 	<key>CFBundleDevelopmentRegion</key>
@@ -29,19 +22,48 @@
 	<string>$(FLUTTER_BUILD_NAME)</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLName</key>
+			<string>weixin</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>wxfae9158c846191a0</string>
+			</array>
+		</dict>
+	</array>
 	<key>CFBundleVersion</key>
 	<string>$(FLUTTER_BUILD_NUMBER)</string>
+	<key>LSApplicationQueriesSchemes</key>
+	<array>
+		<string>weixin</string>
+		<string>weixinULAPI</string>
+		<string>wechat</string>
+		<string>wechatpay</string>
+		<string>weixinURLParamsAPI</string>
+	</array>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
-	<key>NSPhotoLibraryAddUsageDescription</key>
-	<string>我们需要访问您的相册来保存分享卡片</string>
-	<key>NSPhotoLibraryUsageDescription</key>
-	<string>我们需要访问您的相册来保存分享卡片</string>
+	<key>NSAllowsArbitraryLoads</key>
+	<true/>
 	<key>NSAppTransportSecurity</key>
 	<dict>
 		<key>NSAllowsArbitraryLoads</key>
 		<true/>
+		<key>NSAllowsArbitraryLoadsInWebContent</key>
+		<true/>
 	</dict>
+	<key>NSCalendarsUsageDescription</key>
+	<string>我们需要访问日历来优化打卡提醒、时间规划等功能体验</string>
+	<key>NSCellularDataUsageDescription</key>
+	<string>需要使用蜂窝网络访问服务器接口</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>我们需要访问您的相册来保存分享卡片</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>我们需要访问您的相册来保存分享卡片</string>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>
@@ -82,32 +104,7 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
-		<!-- 1. 微信 AppID 配置 -->
 	<key>WXAppId</key>
 	<string>wxfae9158c846191a0</string>
-
-	<!-- 2. URL Scheme 配置（用于微信回调） -->
-	<key>CFBundleURLTypes</key>
-	<array>
-	<dict>
-		<key>CFBundleTypeRole</key>
-		<string>Editor</string>
-		<key>CFBundleURLName</key>
-		<string>weixin</string>
-		<key>CFBundleURLSchemes</key>
-		<array>
-		<string>wxfae9158c846191a0</string> <!-- 比如 wx1234567890abcdef -->
-		</array>
-	</dict>
-	</array>
-
-
-	<key>LSApplicationQueriesSchemes</key>
-	<array>
-		<string>weixin</string>          <!-- 基础微信 Scheme -->
-		<string>weixinULAPI</string>     <!-- 核心：Universal Links 必需 -->
-		<string>wechat</string>          <!-- 兼容旧版微信 -->
-		<string>wechatpay</string>       <!-- 微信支付（可选，若用到） -->
-	</array>
 </dict>
 </plist>

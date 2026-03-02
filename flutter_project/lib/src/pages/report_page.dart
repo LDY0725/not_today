@@ -278,8 +278,8 @@ class _ReportPageControllerState extends State<ReportPageController>
   }
 
   Widget _buildRankingSection(Color primaryColor, bool isDarkMode) {
-    print("_rankPercentile");
-    print(_rankPercentile);
+    String rankPercentile = _rankPercentile.toStringAsFixed(2);
+
     return Column(
       children: [
         Row(
@@ -296,7 +296,7 @@ class _ReportPageControllerState extends State<ReportPageController>
               ),
             ),
             Text(
-              '击败了 $_rankPercentile% 的人',
+              '击败了 $rankPercentile% 的人',
               style: TextStyle(
                 color: isDarkMode ? Colors.white : primaryColor,
                 fontSize: 12,

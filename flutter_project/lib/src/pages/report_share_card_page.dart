@@ -143,7 +143,6 @@ class _ReportShareCardPageControllerState
                 padding: const EdgeInsets.symmetric(horizontal: 24),
                 child: Column(
                   children: [
-                    const SizedBox(height: 24),
                     _buildShareCard(primaryColor, backgroundPaper, isDarkMode),
                     const SizedBox(height: 24),
                     _buildActionButtons(primaryColor, isDarkMode),
@@ -203,6 +202,7 @@ class _ReportShareCardPageControllerState
     Color backgroundPaper,
     bool isDarkMode,
   ) {
+    String rankPercent = _rankPercent.toStringAsFixed(2);
     return RepaintBoundary(
       key: _cardKey,
       child: Container(
@@ -235,8 +235,6 @@ class _ReportShareCardPageControllerState
               ),
               child: Column(
                 children: [
-                  _buildGridBackground(),
-                  const SizedBox(height: 32),
                   Container(
                     width: 48,
                     height: 2,
@@ -246,7 +244,7 @@ class _ReportShareCardPageControllerState
                   ),
                   const SizedBox(height: 32),
                   Text(
-                    '今天，我还在。\n${_rankPercent.toStringAsFixed(0)}% 忍耐报告',
+                    '今天，我还在。\n我的忍耐报告',
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       color: primaryColor,
@@ -280,7 +278,7 @@ class _ReportShareCardPageControllerState
                   _buildDataRow(
                     primaryColor: primaryColor,
                     label: '击败了全国忍者',
-                    value: '$_rankPercent',
+                    value: rankPercent,
                     unit: '%',
                   ),
                 ],
@@ -342,14 +340,6 @@ class _ReportShareCardPageControllerState
             ),
           ],
         ),
-      ),
-    );
-  }
-
-  Widget _buildGridBackground() {
-    return Positioned.fill(
-      child: CustomPaint(
-        painter: GridPaperPainter(),
       ),
     );
   }
@@ -471,14 +461,15 @@ class _ReportShareCardPageControllerState
           height: 56,
           child: ElevatedButton(
             style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFF07C160),
-              foregroundColor: Colors.white,
+              backgroundColor: Colors.transparent,
+              foregroundColor: primaryColor,
+              side: BorderSide(color: primaryColor.withValues(alpha: 0.3)),
               padding: const EdgeInsets.symmetric(vertical: 16),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
               ),
               elevation: 4,
-              shadowColor: const Color(0xFF07C160).withValues(alpha: 0.3),
+              shadowColor: Colors.transparent,
             ),
             onPressed: _isSharingWechat
                 ? null
@@ -508,14 +499,15 @@ class _ReportShareCardPageControllerState
           height: 56,
           child: ElevatedButton(
             style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFF07C160),
-              foregroundColor: Colors.white,
+              backgroundColor: Colors.transparent,
+              foregroundColor: primaryColor,
+              side: BorderSide(color: primaryColor.withValues(alpha: 0.3)),
               padding: const EdgeInsets.symmetric(vertical: 16),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
               ),
               elevation: 4,
-              shadowColor: const Color(0xFF07C160).withValues(alpha: 0.3),
+              shadowColor: Colors.transparent,
             ),
             onPressed: _isSharingTimeline
                 ? null
@@ -558,34 +550,4 @@ class _ReportShareCardPageControllerState
       ),
     );
   }
-}
-
-class GridPaperPainter extends CustomPainter {
-  @override
-  void paint(Canvas canvas, Size size) {
-    final paint = Paint()
-      ..color = const Color(0xFFe0dcd5)
-      ..strokeWidth = 1;
-
-    final spacing = 20.0;
-
-    for (double x = 0; x < size.width; x += spacing) {
-      canvas.drawLine(
-        Offset(x, 0),
-        Offset(x, size.height),
-        paint,
-      );
-    }
-
-    for (double y = 0; y < size.height; y += spacing) {
-      canvas.drawLine(
-        Offset(0, y),
-        Offset(size.width, y),
-        paint,
-      );
-    }
-  }
-
-  @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
