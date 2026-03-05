@@ -84,7 +84,8 @@ class PaymentService {
 
   void _listenToPurchaseUpdated(List<PurchaseDetails> purchaseDetailsList) {
     for (final purchaseDetails in purchaseDetailsList) {
-      if (purchaseDetails.status == PurchaseStatus.purchased) {
+      if (purchaseDetails.status == PurchaseStatus.purchased ||
+          purchaseDetails.status == PurchaseStatus.restored) {
         _verifyPurchase(purchaseDetails);
       } else if (purchaseDetails.status == PurchaseStatus.error) {
         debugPrint('Purchase error: ${purchaseDetails.error?.message}');

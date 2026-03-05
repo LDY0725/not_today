@@ -55,6 +55,64 @@ class _PaymentPageControllerState extends State<PaymentPageController> {
     }
   }
 
+  Future<void> _handleRestore() async {
+    if (_isProcessing) return;
+
+    setState(() {
+      _isProcessing = true;
+      _errorMessage = null;
+    });
+
+    try {
+      final paymentService = await PaymentService.getInstance();
+      await paymentService.restorePurchases();
+
+      await Future.delayed(const Duration(seconds: 1));
+
+      final userDataService = await UserDataService.getInstance();
+      final isPro = await userDataService.isProUser();
+
+      if (mounted) {
+        setState(() {
+          _isProcessing = false;
+        });
+
+        if (isPro) {
+          Get.closeCurrentSnackbar();
+          Get.snackbar(
+            '恢复成功',
+            '已恢复您的购买记录',
+            snackPosition: SnackPosition.BOTTOM,
+            backgroundColor: const Color(0xFF07C160),
+            colorText: Colors.white,
+          );
+
+          await Future.delayed(const Duration(seconds: 1));
+
+          if (mounted) {
+            Get.offAllNamed('/detail_report');
+          }
+        } else {
+          Get.closeCurrentSnackbar();
+          Get.snackbar(
+            '恢复失败',
+            '未找到购买记录',
+            snackPosition: SnackPosition.BOTTOM,
+            backgroundColor: Colors.orange,
+            colorText: Colors.white,
+          );
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _isProcessing = false;
+          _errorMessage = '恢复失败: $e';
+        });
+      }
+    }
+  }
+
   Future<void> _checkPaymentResult() async {
     await Future.delayed(const Duration(seconds: 2));
 
@@ -314,10 +372,10 @@ class _PaymentPageControllerState extends State<PaymentPageController> {
         _buildPaymentOption(
           primaryColor: primaryColor,
           isDarkMode: isDarkMode,
-          name: 'Apple Pay',
+          name: 'App Store 内购',
           description: '安全、快捷支付',
-          icon: Icons.phone_iphone,
-          iconColor: Colors.black,
+          icon: Icons.apple,
+          iconColor: Colors.white,
           bgColor: Colors.black,
           isSelected: true,
         ),
@@ -501,7 +559,21 @@ class _PaymentPageControllerState extends State<PaymentPageController> {
               ),
             ),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 12),
+          TextButton(
+            onPressed: _isProcessing ? null : _handleRestore,
+            child: Text(
+              '恢复购买',
+              style: TextStyle(
+                color: _isProcessing
+                    ? primaryColor.withValues(alpha: 0.3)
+                    : primaryColor.withValues(alpha: 0.7),
+                fontSize: 14,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ),
+          const SizedBox(height: 8),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
