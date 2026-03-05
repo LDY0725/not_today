@@ -269,7 +269,7 @@ class _PaymentPageControllerState extends State<PaymentPageController> {
               ),
             ),
             const Text(
-              '1.90',
+              '2.00',
               style: TextStyle(
                 color: Color(0xFF1e293b),
                 fontSize: 56,
@@ -491,7 +491,7 @@ class _PaymentPageControllerState extends State<PaymentPageController> {
                     const Icon(Icons.lock, size: 20),
                   const SizedBox(width: 8),
                   Text(
-                    _isProcessing ? '支付中...' : '立即支付 ¥1.90',
+                    _isProcessing ? '支付中...' : '立即支付 ¥2.00',
                     style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w700,
