@@ -90,8 +90,6 @@ func (d *DB) CreateUser(userId, city, industry string) (*models.User, error) {
 }
 
 func (d *DB) UpdateUser(user *models.User) error {
-	checkedInDatesJSON, _ := json.Marshal(user.CheckedInDates)
-	user.CheckedInDates = string(checkedInDatesJSON)
 	user.UpdatedAt = time.Now()
 	return d.DB.Save(user).Error
 }

@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"encoding/json"
 	"log"
 	"net/http"
 	"strings"
@@ -82,6 +83,31 @@ func GetDefaultIndustryStats() []models.IndustryData {
 	}
 }
 
+func parseCheckedInDates(raw string) []string {
+	if raw == "" {
+		return []string{}
+	}
+
+	var dates []string
+	if err := json.Unmarshal([]byte(raw), &dates); err == nil {
+		return dates
+	}
+
+	if strings.Contains(raw, ",") {
+		parts := strings.Split(raw, ",")
+		for _, p := range parts {
+			p = strings.TrimSpace(p)
+			p = strings.Trim(p, "\"")
+			if p != "" && len(p) == 10 {
+				dates = append(dates, p)
+			}
+		}
+		return dates
+	}
+
+	return []string{}
+}
+
 func init() {
 	go func() {
 		for {
@@ -140,7 +166,7 @@ func CheckIn(c *gin.Context) {
 			user.Industry = req.Industry
 			updated = true
 		}
-		checkedInDates = strings.Split(user.CheckedInDates, ",")
+		checkedInDates = parseCheckedInDates(user.CheckedInDates)
 
 		alreadyCheckedIn := false
 		for _, date := range checkedInDates {
@@ -156,7 +182,8 @@ func CheckIn(c *gin.Context) {
 			user.LastUpdated = time.Now()
 			updated = true
 			isNewCheckIn = true
-			user.CheckedInDates = strings.Join(checkedInDates, ",")
+			checkedInDatesJSON, _ := json.Marshal(checkedInDates)
+			user.CheckedInDates = string(checkedInDatesJSON)
 
 			if err := db.UpdateUser(user); err != nil {
 				log.Printf("Failed to update user: %v", err)
